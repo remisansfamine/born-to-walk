@@ -1,304 +1,279 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 enum EActivationType
 {
-    SIGMOID,
-    TANH,
     RELU,
+    TANH,
+    SIGMOID,
+    NONE,
 }
 
-public class Weight
+public class Perceptron
 {
-    public Weight(float _Value)
+    public float biasWeight = 0f;
+    public List<float> weights = new List<float>();
+    public float state = 0f;
+    public float error = 0f;
+
+    public Perceptron(int connectionCount, float initialWeightRange)
     {
-        WeightValue = _Value;
-        OldValue = _Value;
-    }
+        for (int i = 0; i < connectionCount; i++)
+            weights.Add(Random.Range(0f, initialWeightRange));
 
-    private float WeightValue;
-    public float Value 
+        biasWeight = Random.Range(0f, initialWeightRange);
+    }
+}
+
+public class Layer
+{
+    public List<Perceptron> perceptrons = new List<Perceptron>();
+    public Layer prevLayer = null;
+    public Layer nextLayer = null;
+
+    public void InitPerceptrons(int nbPerceptrons, float initialWeightRange, int nbPrevLayerPerceptrons)
     {
-        get 
-        { 
-            return WeightValue; 
-        } 
-
-        set
-        {
-            OldValue = WeightValue;
-            WeightValue = value;
-        }
+        for (int i = 0; i < nbPerceptrons; i++)
+            perceptrons.Add(new Perceptron(nbPrevLayerPerceptrons, initialWeightRange));
     }
-
-    public float OldValue;
-
-}
-
-public class Neuron
-{
-    public float Value;
-
-    public float Error;
-
-    public float BiasWeight = 0.2f;
-
-    //Neuron, Weight
-    public Dictionary<Neuron, Weight> PreviousNeurons;
-}
-
-[System.Serializable]
-public class TrainResult
-{
-    public List<float> Inputs = new List<float>();
-    public float Value;
 }
 
 public class MLPNetwork : MonoBehaviour
 {
-    [SerializeField] private EActivationType ActivationTypeOutput;
-    [SerializeField] private EActivationType ActivationTypeHidden;
+    [SerializeField] private float gain = 0.3f;
+    [SerializeField] private bool useBias = false;
+    [SerializeField] private float initialWeightRange = 0.3f;
 
-    [HideInInspector] public List<Neuron> OutputLayers;
-    private List<Neuron> HiddenLayers;
-    private List<Neuron> InputLayers;
+    [SerializeField] private EActivationType hiddenLayerActivation = EActivationType.SIGMOID;
+    [SerializeField] private EActivationType outputLayerActivation = EActivationType.TANH;
 
-    [SerializeField] private int InputLayerCount = 2;
-    [SerializeField] private int OutputLayerCount = 1;
-    [SerializeField] private int HiddenLayerCount = 2;
+    [SerializeField] private float sigmoidBeta = 1f;
 
-    private int Epochs = 10000;
-    [SerializeField] private float Gain = 0.3f;
+    [SerializeField] private int nbInputPerceptrons = 2;
+    [SerializeField] private List<int> nbHiddenPerceptrons = new List<int>();
+    [SerializeField] private int nbOutputPerceptrons = 1;
 
-    [SerializeField] private bool UseBias;
-
-    public List<TrainResult> TrainResults;
-
-    TrainResult GetOutputValue()
-    {
-        foreach (TrainResult TrainResult in TrainResults)
-        {
-            bool ResultFind = true;
-            for (int i = 0; i < InputLayerCount; ++i)
-            {
-                if (TrainResult.Inputs[i] != InputLayers[i].Value)
-                {
-                    ResultFind = false;
-                    break;
-                }
-            }
-
-            if (ResultFind)
-                return TrainResult;
-        }
-
-        Debug.LogError("There is no result for this inputs !");
-        return null;
-    }
+    public Layer inputLayer { get; private set; } = new Layer();
+    public List<Layer> hiddenLayers { get; private set; } = new List<Layer>();
+    public Layer outputLayer { get; private set; } = new Layer();
 
     private void Start()
     {
-        InputLayers = new List<Neuron>();
-        OutputLayers = new List<Neuron>();
-        HiddenLayers = new List<Neuron>();
-
-        for (int i = 0; i < InputLayerCount; ++i)
-            InputLayers.Add(new Neuron());
-
-        for (int i = 0; i < HiddenLayerCount; ++i)
-            HiddenLayers.Add(new Neuron());
-
-        for (int i = 0; i < OutputLayerCount; ++i)
-            OutputLayers.Add(new Neuron());
-
-        ConnectNeuron(InputLayers, HiddenLayers);
-        ConnectNeuron(HiddenLayers, OutputLayers);
+        InitPerceptrons();
     }
 
-    private void ConnectNeuron(List<Neuron> PreviousNeurons, List<Neuron> NextNeurons)
+    private void InitPerceptrons()
     {
-        Dictionary<Neuron, Weight> PreviousNeuronConnections = new Dictionary<Neuron, Weight>();
+        int lastLayerPeceptronCount = 0;
 
-        foreach (Neuron PreviousNeuron in PreviousNeurons)
+        inputLayer.InitPerceptrons(nbInputPerceptrons, initialWeightRange, lastLayerPeceptronCount);
+
+        lastLayerPeceptronCount = inputLayer.perceptrons.Count;
+
+        for (int i = 0; i < nbHiddenPerceptrons.Count; i++)
         {
-            PreviousNeuronConnections.Add(PreviousNeuron, new Weight(Random.Range(0.01f, 0.2f)));
+            Layer newHiddenLayer = new Layer();
+
+            newHiddenLayer.InitPerceptrons(nbHiddenPerceptrons[i], initialWeightRange, lastLayerPeceptronCount);
+
+            lastLayerPeceptronCount = nbHiddenPerceptrons[i];
+
+            hiddenLayers.Add(newHiddenLayer);
         }
 
-        foreach (Neuron NextNeuron in NextNeurons)
+        outputLayer.InitPerceptrons(nbOutputPerceptrons, initialWeightRange, lastLayerPeceptronCount);
+
+        inputLayer.nextLayer = hiddenLayers.First();
+
+        for (int hl = 0; hl < hiddenLayers.Count; hl++)
         {
-            NextNeuron.PreviousNeurons = PreviousNeuronConnections;
+            hiddenLayers[hl].prevLayer = hl == 0 ? inputLayer : hiddenLayers[hl - 1];
+
+            hiddenLayers[hl].nextLayer = hl == hiddenLayers.Count - 1 ? outputLayer : hiddenLayers[hl + 1];
+        }
+
+        outputLayer.prevLayer = hiddenLayers.Last();
+    }
+
+    float SigmoidThreshold(float input) => 1f / (1f + Mathf.Exp(-sigmoidBeta * input));
+    float TanhThreshold(float input) => System.MathF.Tanh(input);
+    float ReLUThreshold(float input) => Mathf.Max(0, input);
+
+    float Threshold(float input, EActivationType type)
+    {
+        switch (type)
+        {
+            default:
+            case EActivationType.NONE:
+                return 0f;
+
+            case EActivationType.SIGMOID:
+                return SigmoidThreshold(input);
+
+            case EActivationType.TANH:
+                return TanhThreshold(input);
+
+            case EActivationType.RELU:
+                return ReLUThreshold(input);
         }
     }
 
-    public void UpdateInput(float Input, int Index)
+    float SigmoidThresholdDerivative(float input) => input * (1f - input);
+    float TanhThresholdDerivative(float input) => 1f - (input * input);
+
+    float ReLUThresholdDerivative(float input) => input > 0f ? 1f : 0f;
+
+    float ThresholdDerivative(float input, EActivationType type)
     {
-        if (Index >= InputLayers.Count)
+        switch (type)
+        {
+            default:
+            case EActivationType.NONE:
+                return 0f;
+
+            case EActivationType.SIGMOID:
+                return SigmoidThresholdDerivative(input);
+
+            case EActivationType.TANH:
+                return TanhThresholdDerivative(input);
+
+            case EActivationType.RELU:
+                return ReLUThresholdDerivative(input);
+        }
+    }
+
+
+    public List<float> FeedForward(List<float> inputs)
+    {
+        if (inputs.Count != inputLayer.perceptrons.Count)
+        {
+            Debug.LogError("Different inputs count and inputs perceptrons count");
+            return null;
+        }
+
+        for (int ip = 0; ip < inputLayer.perceptrons.Count; ip++)
+            inputLayer.perceptrons[ip].state = inputs[ip];
+
+
+        foreach (Layer hiddenLayer in hiddenLayers)
+        {
+            Layer prevLayer = hiddenLayer.prevLayer;
+
+            foreach (Perceptron currLayerPerceptron in hiddenLayer.perceptrons)
+            {
+                float sum = useBias ? currLayerPerceptron.biasWeight : 0f;
+
+                for (int lp = 0; lp < prevLayer.perceptrons.Count; lp++)
+                    sum += currLayerPerceptron.weights[lp] * prevLayer.perceptrons[lp].state;
+
+                float thresholdedSum = Threshold(sum, hiddenLayerActivation);
+
+                currLayerPerceptron.state = thresholdedSum;
+            }
+        }
+
+        foreach (Perceptron currLayerPerceptron in outputLayer.perceptrons)
+        {
+            Layer prevLayer = outputLayer.prevLayer;
+
+            float sum = useBias ? currLayerPerceptron.biasWeight : 0f;
+
+            for (int lp = 0; lp < prevLayer.perceptrons.Count; lp++)
+                sum += currLayerPerceptron.weights[lp] * prevLayer.perceptrons[lp].state;
+
+            float thresholdedSum = Threshold(sum, outputLayerActivation);
+
+            currLayerPerceptron.state = thresholdedSum;
+        }
+
+        return outputLayer.perceptrons.Select(perceptron => perceptron.state).ToList();
+    }
+
+    public void BackPropagation(List<float> outputs)
+    {
+        if (outputs.Count != outputLayer.perceptrons.Count)
+        {
+            Debug.LogError("Different outputs count and outputs perceptrons count");
             return;
-
-        InputLayers[Index].Value = Input;
-    }
-
-    public void Train()
-    {
-        List<float> InputValues = new List<float>();
-
-        foreach (Neuron InputLayer in InputLayers)
-        {
-            InputValues.Add(InputLayer.Value);
         }
 
-        for (int i = 0; i < Epochs; i++)
+        for (int o = 0; o < outputLayer.perceptrons.Count; o++)
         {
-            TrainResult TrainResultOutput = TrainResults[i % TrainResults.Count];
+            Perceptron currPerceptron = outputLayer.perceptrons[o];
 
-            for (int j = 0; j < InputLayerCount; ++j)
-                InputLayers[j].Value = TrainResultOutput.Inputs[j];
+            float state = currPerceptron.state;
 
-            FeedForward();
-            BackPropagation(TrainResultOutput);
+            float error = ThresholdDerivative(state, outputLayerActivation) * (outputs[o] - state);
+
+            currPerceptron.error = error;
         }
 
-        for (int i = 0; i < InputValues.Count; ++i)
-            InputLayers[i].Value = InputValues[i];
-    }
 
-    public void FeedForward()
-    {
-        foreach (Neuron HiddenNeuron in HiddenLayers)
+        for (int hl = hiddenLayers.Count - 1; hl >= 0; hl--)
         {
-            float Sum = UseBias ? HiddenNeuron.BiasWeight : 0.0f;
+            Layer hiddenLayer = hiddenLayers[hl];
 
-            foreach (var InputNeuron in HiddenNeuron.PreviousNeurons)
+            Layer nextLayer = hiddenLayer.nextLayer;
+
+            for (int hp = 0; hp < hiddenLayer.perceptrons.Count; hp++)
             {
-                Sum += InputNeuron.Key.Value * InputNeuron.Value.Value;
+                Perceptron currPerceptron = hiddenLayer.perceptrons[hp];
+
+                float sum = 0f;
+
+                foreach (Perceptron nextPerceptron in nextLayer.perceptrons)
+                    sum += nextPerceptron.weights[hp] * nextPerceptron.error;
+
+                float state = currPerceptron.state;
+
+                float error = ThresholdDerivative(state, hiddenLayerActivation) * sum;
+
+                currPerceptron.error = error;
+            }
+        }
+
+
+
+
+
+
+        Layer prevLayer = outputLayer.prevLayer;
+
+        foreach (Perceptron currPerceptron in outputLayer.perceptrons)
+        {
+            float error = currPerceptron.error;
+
+            for (int plp = 0; plp < prevLayer.perceptrons.Count; plp++)
+            {
+                float prevState = prevLayer.perceptrons[plp].state;
+
+                float deltaWeight = gain * error * prevState;
+                currPerceptron.weights[plp] += deltaWeight;
             }
 
-            HiddenNeuron.Value = Activation(Sum, ActivationTypeHidden);
+            currPerceptron.biasWeight += gain * error;
         }
 
-        foreach (Neuron OutputNeuron in OutputLayers)
-        {
-            float Sum = UseBias ? OutputNeuron.BiasWeight : 0.0f;
 
-            foreach (var HiddenNeuron in OutputNeuron.PreviousNeurons)
+        foreach (Layer hiddenLayer in hiddenLayers)
+        {
+            prevLayer = hiddenLayer.prevLayer;
+
+            foreach (Perceptron currPerceptron in hiddenLayer.perceptrons)
             {
-                Sum += HiddenNeuron.Key.Value * HiddenNeuron.Value.Value;
+                float error = currPerceptron.error;
+
+                for (int plp = 0; plp < prevLayer.perceptrons.Count; plp++)
+                {
+                    float prevState = prevLayer.perceptrons[plp].state;
+
+                    float deltaWeight = gain * error * prevState;
+                    currPerceptron.weights[plp] += deltaWeight;
+                }
+
+                currPerceptron.biasWeight += gain * error;
             }
-
-            OutputNeuron.Value = Activation(Sum, ActivationTypeOutput);
         }
-    }
-
-    void BackPropagation(TrainResult TrainResultOutput)
-    {
-        for (int i = OutputLayerCount - 1; i >= 0; --i)
-        {
-            Neuron OutputNeuron = OutputLayers[i];
-            OutputNeuron.Error = Derivative(OutputNeuron.Value, ActivationTypeOutput) * (TrainResultOutput.Value - OutputNeuron.Value);
-        }
-
-        for (int i = HiddenLayerCount - 1; i >= 0; --i)
-        {
-            Neuron HiddenNeuron = HiddenLayers[i];
-
-            float ErrorSum = 0.0f;
-
-            foreach (Neuron OutputNeuron in OutputLayers)
-            {
-                Weight Weight;
-
-                if (OutputNeuron.PreviousNeurons.TryGetValue(HiddenNeuron, out Weight))
-                    ErrorSum += Weight.Value * OutputNeuron.Error;
-            }
-
-            HiddenNeuron.Error = Derivative(HiddenNeuron.Value, ActivationTypeHidden) * ErrorSum;
-        }
-
-        for (int i = OutputLayerCount - 1; i >= 0; --i)
-        {
-            Neuron OutputNeuron = OutputLayers[i];
-
-            foreach (var keyValuePair in OutputNeuron.PreviousNeurons)
-            {
-                Weight Weight = keyValuePair.Value;
-                float deltaWeight = Gain * (OutputNeuron.Error * keyValuePair.Key.Value);
-                Weight.Value += deltaWeight;
-            }
-
-            OutputNeuron.BiasWeight += OutputNeuron.Error * Gain;
-        }
-
-        for (int i = HiddenLayerCount - 1; i >= 0; --i)
-        {
-            Neuron HiddenNeuron = HiddenLayers[i];
-
-            foreach (var InputNeuron in HiddenNeuron.PreviousNeurons)
-            {
-                float deltaWeight = Gain * (HiddenNeuron.Error * InputNeuron.Key.Value);
-                HiddenNeuron.PreviousNeurons[InputNeuron.Key].Value += deltaWeight;
-            }
-
-            HiddenNeuron.BiasWeight += HiddenNeuron.Error * Gain;
-        }
-    }
-
-    float Activation(float input, EActivationType ActivationType)
-    {
-        switch (ActivationType)
-        {
-            case EActivationType.RELU:
-                return ReLu(input);
-            case EActivationType.SIGMOID:
-                return Sigmoid(input);
-            case EActivationType.TANH:
-                return Tanh(input);
-        }
-
-        return 0.0f;
-    }
-
-    float Derivative(float input, EActivationType ActivationType)
-    {
-        switch (ActivationType)
-        {
-            case EActivationType.RELU:
-                return DerivativeReLu(input);
-            case EActivationType.SIGMOID:
-                return DerivativeSigmoid(input);
-            case EActivationType.TANH:
-                return DerivativeTanh(input);
-        }
-
-        return 0.0f;
-    }
-
-    float Sigmoid(float input)
-    {
-        return  1.0f / (1.0f + Mathf.Exp(-input));
-    }
-
-    float Tanh(float input)
-    {
-        return (Mathf.Exp(input) - Mathf.Exp(-input)) / (Mathf.Exp(input) + Mathf.Exp(-input));
-    }
-
-    float ReLu(float input)
-    {
-        return Mathf.Max(0, input);
-    }
-
-    float DerivativeSigmoid(float input)
-    {
-        return input * (1.0f - input);
-    }
-
-    float DerivativeTanh(float input)
-    {
-        return 1.0f - (input * input);
-    }
-
-    float DerivativeReLu(float input)
-    {
-        return input > 0 ? 1 : 0;
     }
 }
