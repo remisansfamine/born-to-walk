@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,8 +11,10 @@ enum EActivationType
     NONE,
 }
 
-public class Perceptron
+public class Perceptron : ICloneable
 {
+    public float initialWeightRange = 1.0f;
+
     public float biasWeight = 0f;
     public List<float> weights = new List<float>();
     public float state = 0f;
@@ -19,10 +22,24 @@ public class Perceptron
 
     public Perceptron(int connectionCount, float initialWeightRange)
     {
-        for (int i = 0; i < connectionCount; i++)
-            weights.Add(Random.Range(0f, initialWeightRange));
+        this.initialWeightRange = initialWeightRange;
 
-        biasWeight = Random.Range(0f, initialWeightRange);
+        for (int i = 0; i < connectionCount; i++)
+            weights.Add(UnityEngine.Random.Range(0f, initialWeightRange));
+
+        biasWeight = UnityEngine.Random.Range(0f, initialWeightRange);
+    }
+
+    public void Mutate()
+    {
+        for (int i = 0; i < weights.Count; i++)
+            weights[i] = UnityEngine.Random.Range(0f, initialWeightRange);
+
+        biasWeight = UnityEngine.Random.Range(0f, initialWeightRange);
+    }
+    public object Clone()
+    {
+        return MemberwiseClone();
     }
 }
 
@@ -39,7 +56,8 @@ public class Layer
     }
 }
 
-public class MLPNetwork : MonoBehaviour
+[System.Serializable]
+public class MLPNetwork
 {
     [SerializeField] private float gain = 0.3f;
     [SerializeField] private bool useBias = false;
@@ -58,7 +76,7 @@ public class MLPNetwork : MonoBehaviour
     public List<Layer> hiddenLayers { get; private set; } = new List<Layer>();
     public Layer outputLayer { get; private set; } = new Layer();
 
-    private void Start()
+    public void Initialize()
     {
         InitPerceptrons();
     }

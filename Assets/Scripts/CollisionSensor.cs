@@ -5,7 +5,7 @@ using UnityEngine;
 public class CollisionSensor : MonoBehaviour
 {
     private GameObject objectCollider;
-    public ContactPoint ContactPoint { get; private set; }
+    public ContactPoint? ContactPoint { get; private set; } = null;
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -17,7 +17,7 @@ public class CollisionSensor : MonoBehaviour
     {
         if (collision.gameObject == objectCollider)
         {
-            ContactPoint = new ContactPoint();
+            ContactPoint = null;
             objectCollider = null;
         }
     }

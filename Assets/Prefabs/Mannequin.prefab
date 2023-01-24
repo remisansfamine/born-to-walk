@@ -1084,7 +1084,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1584219705009241186}
-  - component: {fileID: 1584219705009241185}
   m_Layer: 0
   m_Name: mixamorig1:LeftFoot
   m_TagString: Untagged
@@ -1108,18 +1107,6 @@ Transform:
   m_Father: {fileID: 4187124345200385244}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1584219705009241185
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3692249918673066268}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3719548915117079091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1424,7 +1411,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6329026593833536657}
-  - component: {fileID: 6329026593833536656}
   m_Layer: 0
   m_Name: mixamorig1:RightFoot
   m_TagString: Untagged
@@ -1448,18 +1434,6 @@ Transform:
   m_Father: {fileID: 8133470362878226304}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6329026593833536656
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4354964949874508996}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4834495987332331367
 GameObject:
   m_ObjectHideFlags: 0
@@ -2082,6 +2056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6032817042039257136}
   - component: {fileID: 6032817042039257143}
+  - component: {fileID: 8530817402829550729}
   m_Layer: 0
   m_Name: Mannequin
   m_TagString: Untagged
@@ -2118,6 +2093,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee05a23a0cdaea4f98737f713e1d59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8530817402829550729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6409483799035142794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2968c3173bd971347a7cbd5e18295d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mlp:
+    gain: 0.3
+    useBias: 1
+    initialWeightRange: 0.3
+    hiddenLayerActivation: 2
+    outputLayerActivation: 1
+    sigmoidBeta: 1
+    nbInputPerceptrons: 11
+    nbHiddenPerceptrons: 050000000500000005000000
+    nbOutputPerceptrons: 11
 --- !u!1 &6660401964637897045
 GameObject:
   m_ObjectHideFlags: 0

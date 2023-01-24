@@ -9,10 +9,9 @@ struct Bone
 
     public Bone(Rigidbody rb)
     {
-        collisionSensor= rb.GetComponent<CollisionSensor>();
+        collisionSensor = rb.GetComponent<CollisionSensor>();
         rigidbody = rb;
     }
-
 }
 
 public class RagdollController : MonoBehaviour
@@ -33,5 +32,4 @@ public class RagdollController : MonoBehaviour
     {
 
     }
-
 }
