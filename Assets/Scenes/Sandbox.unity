@@ -424,7 +424,7 @@ Transform:
   m_GameObject: {fileID: 970077975}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.07564718, y: 0, z: -1.6868482}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -461,7 +461,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_individualPrefab: {fileID: 6409483799035142794, guid: 2f5cc0ffeafab5146a8494068eb7e3a2, type: 3}
   m_spawnPoint: {fileID: 328015553}
-  populationCount: 6
+  populationCount: 25
   layerOffset: 6
   headTarget: {fileID: 1172384566}
   BestGens: []
@@ -572,7 +572,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1172384562}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.96, z: 0}
+  m_LocalPosition: {x: 0, y: 2.885, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -37,7 +37,7 @@ public class GeneticModifier : MonoBehaviour
     {
         float score = 0;
 
-        score = 1f / Vector3.Distance(headTarget.position, ragdollController.boneHead.position);
+        score = 1f / Mathf.Abs(headTarget.position.y - ragdollController.boneHead.position.y);
         score = Mathf.Pow(5, score);
 
         return score;

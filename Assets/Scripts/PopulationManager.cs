@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts;
-using Unity.VisualScripting;
 
 public class PopulationManager : MonoBehaviour
 {
@@ -29,7 +27,13 @@ public class PopulationManager : MonoBehaviour
 
     void Start()
     {
-        generationCount++;
+        for (int lai = layerOffset; lai < populationCount; lai++)
+        {
+            for (int lbi = lai; lbi < populationCount; lbi++)
+            {
+                Physics.IgnoreLayerCollision(lai, lbi, true);
+            }
+        }
 
         for (int i = 0; i < populationCount; i++)
         {
@@ -37,20 +41,30 @@ public class PopulationManager : MonoBehaviour
             population.Add(individualGen);    
         }
 
+        SetLayers();
+
+        generationCount++;
+
         Time.timeScale = 5f;
     }
 
     private void FixedUpdate()
     {
         currentFixedStep++;
-        Debug.Log("New step");
 
         if (maxFixedStep > currentFixedStep)
             return;
 
-
         NewGeneration();
         currentFixedStep = 0;
+    }
+
+    private void SetLayers()
+    {
+        for (int i = 0; i < populationCount; i++)
+        {
+            population[i].gameObject.SetLayerRecursively(layerOffset + i);
+        }
     }
 
     private GeneticModifier InstantiateIndividual()
@@ -58,10 +72,6 @@ public class PopulationManager : MonoBehaviour
         GameObject individual = Instantiate(m_individualPrefab, m_spawnPoint.position, m_spawnPoint.rotation);
 
         int i = population.Count - 1;
-        individual.SetLayerRecursively(layerOffset + i);
-
-        for (int j = i + 1; j < populationCount; j++)
-            Physics.IgnoreLayerCollision(individual.layer, layerOffset + j, true);
 
         GeneticModifier geneticModifier = individual.GetComponent<GeneticModifier>();
         geneticModifier.Initialize(headTarget);
@@ -130,9 +140,10 @@ public class PopulationManager : MonoBehaviour
             Destroy(population[i].gameObject);
 
         population = newPopulation;
-        generationCount++;
 
-        Debug.Log("New generation");
+        SetLayers();
+
+        generationCount++;
     }
     
 }
