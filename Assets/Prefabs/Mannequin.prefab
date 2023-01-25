@@ -2093,6 +2093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee05a23a0cdaea4f98737f713e1d59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boneHead: {fileID: 4511646032618266106}
 --- !u!114 &8530817402829550729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2112,9 +2113,10 @@ MonoBehaviour:
     hiddenLayerActivation: 2
     outputLayerActivation: 1
     sigmoidBeta: 1
-    nbInputPerceptrons: 11
-    nbHiddenPerceptrons: 050000000500000005000000
-    nbOutputPerceptrons: 11
+    nbInputPerceptrons: 33
+    nbHiddenPerceptrons: 0f0000000f0000000f000000
+    nbOutputPerceptrons: 33
+  ragdollController: {fileID: 6032817042039257143}
 --- !u!1 &6660401964637897045
 GameObject:
   m_ObjectHideFlags: 0

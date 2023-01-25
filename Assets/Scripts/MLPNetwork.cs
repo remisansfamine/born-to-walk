@@ -57,7 +57,7 @@ public class Layer
 }
 
 [System.Serializable]
-public class MLPNetwork
+public class MLPNetwork : ICloneable
 {
     [SerializeField] private float gain = 0.3f;
     [SerializeField] private bool useBias = false;
@@ -293,5 +293,10 @@ public class MLPNetwork
                 currPerceptron.biasWeight += gain * error;
             }
         }
+    }
+
+    public object Clone()
+    {
+        return MemberwiseClone();
     }
 }
