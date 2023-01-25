@@ -17,16 +17,14 @@ public struct Bone
 
 public class RagdollController : MonoBehaviour
 {
+    [SerializeField] List<Rigidbody> bonesRigidbobies = new List<Rigidbody>();
+
     public List<Bone> bones = new List<Bone>();
 
     public Transform boneHead = null;
 
     private void Awake()
     {
-        List<Rigidbody> bonesRigidbobies = new List<Rigidbody>();
-
-        GetComponentsInChildren(bonesRigidbobies);
-
         foreach (Rigidbody rb in bonesRigidbobies)
             bones.Add(new Bone(rb));
     }
@@ -37,19 +35,9 @@ public class RagdollController : MonoBehaviour
 
         foreach (Bone bone in bones)
         {
-            if (bone.collisionSensor.ContactPoint != null)
-            {
-                ContactPoint contactPoint = bone.collisionSensor.ContactPoint.Value;
-                inputs.Add(contactPoint.point.x);
-                inputs.Add(contactPoint.point.y);
-                inputs.Add(contactPoint.point.z);
-            }
-            else 
-            {
-                inputs.Add(-1f);
-                inputs.Add(-1f);
-                inputs.Add(-1f);
-            }
+            inputs.Add(bone.collisionSensor.contactPoint.x);
+            inputs.Add(bone.collisionSensor.contactPoint.y);
+            inputs.Add(bone.collisionSensor.contactPoint.z);
         }
 
         return inputs;

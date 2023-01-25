@@ -2093,6 +2093,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee05a23a0cdaea4f98737f713e1d59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bonesRigidbobies:
+  - {fileID: 4839791807851880096}
+  - {fileID: 5254814576043061951}
+  - {fileID: 8175990280297992446}
+  - {fileID: 6180787992620634570}
+  - {fileID: 8133470362878226310}
+  - {fileID: 5887352010801016914}
+  - {fileID: 3467075012516116558}
+  - {fileID: 4667009081527775660}
+  - {fileID: 7662419594530918416}
+  - {fileID: 8947929631660119006}
+  - {fileID: 6660401964637897051}
   boneHead: {fileID: 4511646032618266106}
 --- !u!114 &8530817402829550729
 MonoBehaviour:
