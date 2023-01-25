@@ -29,8 +29,9 @@ public class PopulationManager : MonoBehaviour
     {
         for (int lai = layerOffset; lai < populationCount; lai++)
         {
-            for (int lbi = lai; lbi < populationCount; lbi++)
+            for (int lbi = lai + 1; lbi < populationCount + layerOffset; lbi++)
             {
+                Debug.Log(LayerMask.LayerToName(lai) + " ; "+ LayerMask.LayerToName(lbi));
                 Physics.IgnoreLayerCollision(lai, lbi, true);
             }
         }
