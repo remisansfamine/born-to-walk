@@ -55,6 +55,7 @@ public class PopulationManager : MonoBehaviour
         generationCount++;
 
         Time.timeScale = 10f;
+        Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
     }
 
     private void FixedUpdate()
@@ -131,6 +132,7 @@ public class PopulationManager : MonoBehaviour
         if (population.Count <= 0) 
             return;
 
+        CalculateFitnessSum();
         population.Sort(CompareIndvidual);
 
         if (teleportTarget)
@@ -142,7 +144,6 @@ public class PopulationManager : MonoBehaviour
             headTarget.position = new Vector3(circle.x, headTarget.position.y, circle.y);
         }
 
-        CalculateFitnessSum();
 
         List<GeneticModifier> newPopulation = new List<GeneticModifier>();
 

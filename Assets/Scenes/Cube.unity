@@ -367,9 +367,9 @@ MonoBehaviour:
   layerOffset: 6
   headTarget: {fileID: 1172384566}
   BestGens: []
-  mutationRate: 0.075
-  maxFixedStep: 300
-  elitism: 50
+  mutationRate: 0.4
+  maxFixedStep: 100
+  elitism: 100
   teleportTarget: 1
   reproduceGeneration: 1
   useLayerIgnore: 0
