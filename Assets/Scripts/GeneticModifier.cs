@@ -5,13 +5,11 @@ using UnityEngine.Rendering;
 using System.Linq;
 using UnityEngine.SocialPlatforms.Impl;
 
-[RequireComponent(typeof(RagdollController))]
 public class GeneticModifier : MonoBehaviour
 {
-    [SerializeField] private MLPNetwork mlp = new MLPNetwork();
-    public MLPNetwork MLP => mlp;
+    public MLPNetwork mlp = new MLPNetwork();
 
-    [SerializeField] private RagdollController ragdollController;
+    [SerializeField] private CubeController mlpInterpreter;
 
     private Transform headTarget = null;
 
@@ -26,11 +24,16 @@ public class GeneticModifier : MonoBehaviour
 
     private void FixedUpdate()
     {
-        List<float> inputs = ragdollController.GetInputs();
+        List<float> inputs = mlpInterpreter.GetInputs();
+
+        Vector3 dir = transform.position - headTarget.position;
+        inputs.Add(dir.x);
+        inputs.Add(dir.y);
+        inputs.Add(dir.z);
 
         List<float> outputs = mlp.FeedForward(inputs);
 
-        ragdollController.SetOuputs(outputs);   
+        mlpInterpreter.SetOuputs(outputs);   
     }
 
 
@@ -38,10 +41,12 @@ public class GeneticModifier : MonoBehaviour
     {
         float score = 0;
 
-        float distance = Vector3.Distance(headTarget.position, ragdollController.boneHead.position);
+        //float distance = Vector3.Distance(headTarget.position, mlpInterpreter.boneHead.position);
+        float distance = Vector3.Distance(headTarget.position, transform.position);
 
         //score = Mathf.Exp(-distance);
-        score = 1f - distance / 10f;
+        score = 1f - Mathf.Clamp(distance, 0.01f, 100f) / 100f;
+        Debug.Log("Distance:" + distance);
         return score;
     }
 

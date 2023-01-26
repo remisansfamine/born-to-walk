@@ -19,7 +19,7 @@ public class Bone
     }
 }
 
-public class RagdollController : MonoBehaviour
+public class RagdollController : MonoBehaviour, IMLPInterpreter
 {
     [SerializeField] private Rigidbody bonesHipsRb;
     [SerializeField] private List<Rigidbody> bonesRigidbobies = new List<Rigidbody>();
@@ -42,9 +42,9 @@ public class RagdollController : MonoBehaviour
 
         foreach (Bone bone in bones)
         {
-            /*inputs.Add(bone.collisionSensor.contactPoint.x);
+            inputs.Add(bone.collisionSensor.contactPoint.x);
             inputs.Add(bone.collisionSensor.contactPoint.y);
-            inputs.Add(bone.collisionSensor.contactPoint.z);*/
+            inputs.Add(bone.collisionSensor.contactPoint.z);
 
             inputs.Add(bone.rigidbody.transform.position.x);
             inputs.Add(bone.rigidbody.transform.position.y);
@@ -70,8 +70,12 @@ public class RagdollController : MonoBehaviour
     {
         for (int i = 0; i < bones.Count - 1; ++i)
         {
-            float torque = outputs[i] * 2f - 1f;
-            bones[i].rigidbody.AddTorque(bones[i].characterJoint.swingAxis * (torque * 100f), ForceMode.Impulse);
+            float torque =  (outputs[i]) * 2f - 1f;
+            float swingTorque =  (outputs[i * 2]) * 2f - 1f;
+
+
+            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.axis * (torque * 100f), ForceMode.Impulse);
+            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.swingAxis * (swingTorque * 100f), ForceMode.Impulse);
         }
     }
 

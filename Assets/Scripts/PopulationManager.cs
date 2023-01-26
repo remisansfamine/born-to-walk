@@ -25,13 +25,15 @@ public class PopulationManager : MonoBehaviour
     [SerializeField] private int maxFixedStep = 0;
     private int currentFixedStep = 0;
 
+    [SerializeField] private int elitism = 0;
+
     void Start()
     {
-        for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
+        /*for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
         {
             for (int lbi = lai + 1; lbi < populationCount + layerOffset; lbi++)
                 Physics.IgnoreLayerCollision(lai, lbi, true);
-        }
+        }*/
 
         for (int i = 0; i < populationCount; i++)
         {
@@ -39,11 +41,11 @@ public class PopulationManager : MonoBehaviour
             population.Add(individualGen);    
         }
 
-        SetLayers();
+        //SetLayers();
 
         generationCount++;
 
-        Time.timeScale = 2f;
+        Time.timeScale = 10f;
     }
 
     private void FixedUpdate()
@@ -94,7 +96,7 @@ public class PopulationManager : MonoBehaviour
         Debug.Log("BestFitness:" + BestFitness);
 
         //TODO: le loup
-        BestGens.Add(best.MLP.Clone() as MLPNetwork);
+        BestGens.Add(best.mlp.Clone() as MLPNetwork);
     }
 
     private GeneticModifier ChooseParent()
@@ -112,10 +114,30 @@ public class PopulationManager : MonoBehaviour
         return null;
     }
 
+    public int CompareIndvidual(GeneticModifier a, GeneticModifier b)
+    {
+        if (a.Fitness > b.Fitness)
+            return -1;
+
+        if (a.Fitness < b.Fitness)
+            return 1;
+
+
+        return 0;
+    }
+
     private void NewGeneration()
     {
         if (population.Count <= 0) 
             return;
+
+        population.Sort(CompareIndvidual);
+
+        Vector2 circle = Random.insideUnitCircle;
+        circle.Normalize();
+        circle *= 75f;
+
+        headTarget.position = new Vector3(circle.x, headTarget.position.y, circle.y);
 
         CalculateFitnessSum();
 
@@ -123,16 +145,25 @@ public class PopulationManager : MonoBehaviour
 
         for (int i = 0; i < population.Count; ++i)
         {
-            GeneticModifier parentA = ChooseParent();
-            GeneticModifier parentB = ChooseParent();
+            if (i < elitism)
+            {
+                GeneticModifier child = InstantiateIndividual();
+                child.mlp = population[i].mlp.Clone() as MLPNetwork;
+                newPopulation.Add(child);
+            }
+            else
+            {
+                GeneticModifier parentA = ChooseParent();
+                GeneticModifier parentB = ChooseParent();
 
-            GeneticModifier child = InstantiateIndividual();
+                GeneticModifier child = InstantiateIndividual();
 
-            GeneticModifier.Crossover(ref child, parentA, parentB);
+                GeneticModifier.Crossover(ref child, parentA, parentB);
 
-            child.Mutate(mutationRate);
+                child.Mutate(mutationRate);
 
-            newPopulation.Add(child);
+                newPopulation.Add(child);
+            }
         }
 
         for (int i = 0; i < population.Count; ++i)
@@ -140,7 +171,7 @@ public class PopulationManager : MonoBehaviour
 
         population = newPopulation;
 
-        SetLayers();
+        //SetLayers();
 
         generationCount++;
     }

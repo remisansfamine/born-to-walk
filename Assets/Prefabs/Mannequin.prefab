@@ -2127,13 +2127,13 @@ MonoBehaviour:
   mlp:
     gain: 0.3
     useBias: 1
-    initialWeightRange: 0.3
+    initialWeightRange: 0.1
     hiddenLayerActivation: 2
     outputLayerActivation: 2
     sigmoidBeta: 1
-    nbInputPerceptrons: 132
+    nbInputPerceptrons: 165
     nbHiddenPerceptrons: 400000004000000040000000
-    nbOutputPerceptrons: 10
+    nbOutputPerceptrons: 20
   ragdollController: {fileID: 6032817042039257143}
 --- !u!1 &6660401964637897045
 GameObject:

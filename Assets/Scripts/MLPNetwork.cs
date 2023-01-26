@@ -25,17 +25,20 @@ public class Perceptron : ICloneable
         this.initialWeightRange = initialWeightRange;
 
         for (int i = 0; i < connectionCount; i++)
-            weights.Add(UnityEngine.Random.Range(0f, initialWeightRange));
+            weights.Add(UnityEngine.Random.Range(-initialWeightRange, initialWeightRange));
 
-        biasWeight = UnityEngine.Random.Range(0f, initialWeightRange);
+        biasWeight = UnityEngine.Random.Range(-initialWeightRange, initialWeightRange);
     }
 
     public void Mutate()
     {
         for (int i = 0; i < weights.Count; i++)
-            weights[i] = UnityEngine.Random.Range(0f, initialWeightRange);
+            weights[i] += UnityEngine.Random.Range(-.1f, .1f);
+            //weights[i] = UnityEngine.Random.Range(0f, initialWeightRange);
+        
+        //biasWeight = UnityEngine.Random.Range(0f, initialWeightRange);
+        biasWeight += UnityEngine.Random.Range(-.1f, .1f);
 
-        biasWeight = UnityEngine.Random.Range(0f, initialWeightRange);
     }
     public object Clone()
     {
