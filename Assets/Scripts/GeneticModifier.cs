@@ -78,7 +78,7 @@ public class GeneticModifier : MonoBehaviour
             for (int hpi = 0; hpi < childHiddenLayer.perceptrons.Count; hpi++)
             {
                 bool chooseParentA = Random.Range(0.0f, 1.0f) < 0.5f;
-                childHiddenLayer.perceptrons[hpi] = (chooseParentA ? hiddenLayerA : hiddenLayerB).perceptrons[hpi].Clone() as Perceptron;
+                childHiddenLayer.perceptrons[hpi] = new Perceptron((chooseParentA ? hiddenLayerA : hiddenLayerB).perceptrons[hpi]);
             }
         }
 
@@ -88,7 +88,7 @@ public class GeneticModifier : MonoBehaviour
         for (int hpi = 0; hpi < outputLayerA.perceptrons.Count; hpi++)
         {
             bool chooseParentA = Random.Range(0.0f, 1.0f) < 0.5f;
-            child.mlp.outputLayer.perceptrons[hpi] = (chooseParentA ? outputLayerA : outputLayerB).perceptrons[hpi].Clone() as Perceptron;
+            child.mlp.outputLayer.perceptrons[hpi] = new Perceptron((chooseParentA ? outputLayerA : outputLayerB).perceptrons[hpi]);
         }
     }
 }

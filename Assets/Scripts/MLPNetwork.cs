@@ -11,7 +11,7 @@ enum EActivationType
     NONE,
 }
 
-public class Perceptron : ICloneable
+public class Perceptron
 {
     public float initialWeightRange = 1.0f;
 
@@ -19,6 +19,15 @@ public class Perceptron : ICloneable
     public List<float> weights = new List<float>();
     public float state = 0f;
     public float error = 0f;
+
+    public Perceptron(Perceptron other)
+    {
+        initialWeightRange = other.initialWeightRange;
+        biasWeight = other.biasWeight;
+        weights = new List<float>(other.weights);
+        state = other.state;
+        error = other.error;
+    }
 
     public Perceptron(int connectionCount, float initialWeightRange)
     {
@@ -40,10 +49,6 @@ public class Perceptron : ICloneable
         biasWeight += UnityEngine.Random.Range(-.1f, .1f);
 
     }
-    public object Clone()
-    {
-        return MemberwiseClone();
-    }
 }
 
 public class Layer
@@ -57,10 +62,15 @@ public class Layer
         for (int i = 0; i < nbPerceptrons; i++)
             perceptrons.Add(new Perceptron(nbPrevLayerPerceptrons, initialWeightRange));
     }
+
+    public Layer()
+    {
+
+    }
 }
 
 [System.Serializable]
-public class MLPNetwork : ICloneable
+public class MLPNetwork
 {
     [SerializeField] private float gain = 0.3f;
     [SerializeField] private bool useBias = false;
@@ -74,6 +84,40 @@ public class MLPNetwork : ICloneable
     [SerializeField] private int nbInputPerceptrons = 2;
     [SerializeField] private List<int> nbHiddenPerceptrons = new List<int>();
     [SerializeField] private int nbOutputPerceptrons = 1;
+
+    public MLPNetwork() { }
+
+    public MLPNetwork(MLPNetwork other)
+    {
+        gain = other.gain;
+        useBias = other.useBias;
+        initialWeightRange = other.initialWeightRange;
+        hiddenLayerActivation = other.hiddenLayerActivation;
+        outputLayerActivation = other.outputLayerActivation;
+        sigmoidBeta = other.sigmoidBeta;
+
+        nbInputPerceptrons = other.nbInputPerceptrons;
+        nbHiddenPerceptrons = new List<int>(other.nbHiddenPerceptrons);
+        nbOutputPerceptrons = other.nbOutputPerceptrons;
+
+        InitPerceptrons();
+
+
+        for (int ipi = 0; ipi < inputLayer.perceptrons.Count; ipi++)
+            inputLayer.perceptrons[ipi] = new Perceptron(other.inputLayer.perceptrons[ipi]);
+
+        for (int hli = 0; hli < hiddenLayers.Count; hli++)
+        {
+            Layer thisLayer = hiddenLayers[hli];
+            Layer otherLayer = other.hiddenLayers[hli];
+
+            for (int hpi = 0; hpi < thisLayer.perceptrons.Count; hpi++)
+                thisLayer.perceptrons[hpi] = new Perceptron(otherLayer.perceptrons[hpi]);
+        }
+
+        for (int opi = 0; opi < outputLayer.perceptrons.Count; opi++)
+            outputLayer.perceptrons[opi] = new Perceptron(other.outputLayer.perceptrons[opi]);
+    }
 
     public Layer inputLayer { get; private set; } = new Layer();
     public List<Layer> hiddenLayers { get; private set; } = new List<Layer>();

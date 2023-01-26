@@ -108,19 +108,11 @@ public class PopulationManager : MonoBehaviour
         BestGens.Add(best.mlp.Clone() as MLPNetwork);
     }
 
-    private GeneticModifier ChooseParent()
+    private GeneticModifier ChooseParent(List<GeneticModifier> possibleParents)
     {
-        float randomNumber = Random.Range(0f, fitnessSum);
+        int randomElite = Random.Range(0, possibleParents.Count - 1);
 
-        for (int i = 0; i < population.Count; i++)
-        {
-            if (randomNumber < population[i].Fitness)
-                return population[i];
-
-            randomNumber -= population[i].Fitness;
-        }
-
-        return null;
+        return possibleParents[randomElite];
     }
 
     public int CompareIndvidual(GeneticModifier a, GeneticModifier b)
@@ -130,7 +122,6 @@ public class PopulationManager : MonoBehaviour
 
         if (a.Fitness < b.Fitness)
             return 1;
-
 
         return 0;
     }
@@ -160,13 +151,17 @@ public class PopulationManager : MonoBehaviour
             if (i < elitism)
             {
                 GeneticModifier child = InstantiateIndividual();
-                child.mlp = population[i].mlp.Clone() as MLPNetwork;
+                child.mlp = new MLPNetwork(population[i].mlp);
                 newPopulation.Add(child);
             }
             else
             {
-                GeneticModifier parentA = ChooseParent();
-                GeneticModifier parentB = ChooseParent();
+                List<GeneticModifier> possibleParents = population.GetRange(0, elitism);
+                GeneticModifier parentA = ChooseParent(possibleParents);
+
+                possibleParents.Remove(parentA);
+
+                GeneticModifier parentB = ChooseParent(possibleParents);
 
                 GeneticModifier child = InstantiateIndividual();
 
