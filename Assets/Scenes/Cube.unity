@@ -369,7 +369,7 @@ MonoBehaviour:
   BestGens: []
   mutationRate: 0.4
   maxFixedStep: 100
-  elitism: 100
+  elitism: 25
   teleportTarget: 1
   reproduceGeneration: 1
   useLayerIgnore: 0

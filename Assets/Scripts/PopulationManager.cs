@@ -137,11 +137,11 @@ public class PopulationManager : MonoBehaviour
 
         if (teleportTarget)
         {
-            Vector2 circle = Random.insideUnitCircle;
+            Vector3 circle = Random.insideUnitSphere;
             circle.Normalize();
             circle *= 50f;
 
-            headTarget.position = new Vector3(circle.x, headTarget.position.y, circle.y);
+            headTarget.position = new Vector3(circle.x, circle.y, circle.z);
         }
 
 
