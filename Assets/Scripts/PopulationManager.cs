@@ -27,13 +27,16 @@ public class PopulationManager : MonoBehaviour
 
     [SerializeField] private int elitism = 0;
 
+    [SerializeField] private bool teleportTarget = true;
+    [SerializeField] private bool reproduceGeneration = true;
+
     void Start()
     {
-        /*for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
+        for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
         {
             for (int lbi = lai + 1; lbi < populationCount + layerOffset; lbi++)
                 Physics.IgnoreLayerCollision(lai, lbi, true);
-        }*/
+        }
 
         for (int i = 0; i < populationCount; i++)
         {
@@ -41,18 +44,18 @@ public class PopulationManager : MonoBehaviour
             population.Add(individualGen);    
         }
 
-        //SetLayers();
+        SetLayers();
 
         generationCount++;
 
-        Time.timeScale = 10f;
+        Time.timeScale = 3f;
     }
 
     private void FixedUpdate()
     {
         currentFixedStep++;
 
-        if (maxFixedStep > currentFixedStep)
+        if (maxFixedStep > currentFixedStep || !reproduceGeneration)
             return;
 
         NewGeneration();
@@ -133,11 +136,14 @@ public class PopulationManager : MonoBehaviour
 
         population.Sort(CompareIndvidual);
 
-        Vector2 circle = Random.insideUnitCircle;
-        circle.Normalize();
-        circle *= 75f;
+        if (teleportTarget)
+        {
+            Vector2 circle = Random.insideUnitCircle;
+            circle.Normalize();
+            circle *= 75f;
 
-        headTarget.position = new Vector3(circle.x, headTarget.position.y, circle.y);
+            headTarget.position = new Vector3(circle.x, headTarget.position.y, circle.y);
+        }
 
         CalculateFitnessSum();
 
@@ -171,7 +177,7 @@ public class PopulationManager : MonoBehaviour
 
         population = newPopulation;
 
-        //SetLayers();
+        SetLayers();
 
         generationCount++;
     }

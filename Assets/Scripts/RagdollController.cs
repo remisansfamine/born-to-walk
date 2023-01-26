@@ -19,14 +19,16 @@ public class Bone
     }
 }
 
-public class RagdollController : MonoBehaviour, IMLPInterpreter
-{
+public class RagdollController : MLPInterpreter
+{ 
     [SerializeField] private Rigidbody bonesHipsRb;
     [SerializeField] private List<Rigidbody> bonesRigidbobies = new List<Rigidbody>();
 
     public List<Bone> bones = new List<Bone>();
 
     public Transform boneHead = null;
+    public Transform boneLeftArm = null;
+    public Transform boneRightArm = null;
 
     private void Awake()
     {
@@ -36,7 +38,7 @@ public class RagdollController : MonoBehaviour, IMLPInterpreter
         bones.Add(new Bone(bonesHipsRb));
     }
 
-    public List<float> GetInputs()
+    public override List<float> GetInputs()
     {
         List<float> inputs = new List<float>();
 
@@ -66,17 +68,24 @@ public class RagdollController : MonoBehaviour, IMLPInterpreter
         return inputs;
     }
 
-    public void SetOuputs(List<float> outputs)
+    public override void SetOuputs(List<float> outputs)
     {
         for (int i = 0; i < bones.Count - 1; ++i)
         {
-            float torque =  (outputs[i]) * 2f - 1f;
-            float swingTorque =  (outputs[i * 2]) * 2f - 1f;
-
+            float torque = outputs[i];
+            float swingTorque =  outputs[i * 2];
 
             bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.axis * (torque * 100f), ForceMode.Impulse);
             bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.swingAxis * (swingTorque * 100f), ForceMode.Impulse);
         }
+    }
+
+    public override float FitnessFunction(GeneticModifier modifier)
+    {
+        float distance = Vector3.Distance(modifier.headTarget.position, boneHead.position);
+        float score = Mathf.Exp(-distance);
+
+        return score;
     }
 
 }

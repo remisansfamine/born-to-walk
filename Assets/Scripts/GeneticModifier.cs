@@ -9,9 +9,9 @@ public class GeneticModifier : MonoBehaviour
 {
     public MLPNetwork mlp = new MLPNetwork();
 
-    [SerializeField] private CubeController mlpInterpreter;
+    [SerializeField] private MLPInterpreter mlpInterpreter;
 
-    private Transform headTarget = null;
+    public Transform headTarget = null;
 
     public float Fitness { get; private set; }
 
@@ -39,15 +39,7 @@ public class GeneticModifier : MonoBehaviour
 
     public float FitnessFunction()
     {
-        float score = 0;
-
-        //float distance = Vector3.Distance(headTarget.position, mlpInterpreter.boneHead.position);
-        float distance = Vector3.Distance(headTarget.position, transform.position);
-
-        //score = Mathf.Exp(-distance);
-        score = 1f - Mathf.Clamp(distance, 0.01f, 100f) / 100f;
-        Debug.Log("Distance:" + distance);
-        return score;
+        return mlpInterpreter.FitnessFunction(this);
     }
 
     public float CalculateFitness()

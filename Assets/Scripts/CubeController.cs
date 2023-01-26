@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.XR;
 
 [RequireComponent(typeof(Rigidbody))]
-public class CubeController : MonoBehaviour
+public class CubeController : MLPInterpreter
 {
 
     private Rigidbody cubeRigidbody = null;
@@ -16,7 +16,7 @@ public class CubeController : MonoBehaviour
         collisionSensor = GetComponent<CollisionSensor>();
     }
 
-    public List<float> GetInputs()
+    public override List<float> GetInputs()
     {
         List<float> inputs = new List<float>();
 
@@ -43,7 +43,7 @@ public class CubeController : MonoBehaviour
         return inputs;
     }
 
-    public void SetOuputs(List<float> outputs)
+    public override void SetOuputs(List<float> outputs)
     {
         cubeRigidbody.velocity = Vector3.zero;
         Vector3 force = new Vector3(outputs[0], outputs[1], outputs[2]);
@@ -51,5 +51,15 @@ public class CubeController : MonoBehaviour
         /*Vector3 torque = new Vector3(outputs[3], outputs[4], outputs[5]) * 2f - Vector3.one;
         cubeRigidbody.AddRelativeTorque(torque * 10f, ForceMode.Impulse);*/
 
+    }
+
+    public override float FitnessFunction(GeneticModifier modifier)
+    {
+        float distance = Vector3.Distance(modifier.headTarget.position, transform.position);
+
+        //score = Mathf.Exp(-distance);
+        float score = 1f - Mathf.Clamp(distance, 0.01f, 100f) / 100f;
+        Debug.Log("Distance:" + distance);
+        return score;
     }
 }
