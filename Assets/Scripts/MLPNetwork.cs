@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 enum EActivationType
@@ -67,6 +68,12 @@ public class Layer
     {
 
     }
+
+    public Layer(Layer other)
+    {
+        foreach (Perceptron otherPerceptron in other.perceptrons)
+            perceptrons.Add(new Perceptron(otherPerceptron));
+    }
 }
 
 [System.Serializable]
@@ -103,20 +110,27 @@ public class MLPNetwork
         InitPerceptrons();
 
 
-        for (int ipi = 0; ipi < inputLayer.perceptrons.Count; ipi++)
-            inputLayer.perceptrons[ipi] = new Perceptron(other.inputLayer.perceptrons[ipi]);
+        inputLayer = new Layer(other.inputLayer);
 
-        for (int hli = 0; hli < hiddenLayers.Count; hli++)
+        hiddenLayers = new List<Layer>();
+
+        foreach (Layer otherLayer in other.hiddenLayers)
+            hiddenLayers.Add(new Layer(otherLayer));
+
+        outputLayer = new Layer(other.outputLayer);
+
+
+
+        inputLayer.nextLayer = hiddenLayers.First();
+
+        for (int hl = 0; hl < hiddenLayers.Count; hl++)
         {
-            Layer thisLayer = hiddenLayers[hli];
-            Layer otherLayer = other.hiddenLayers[hli];
+            hiddenLayers[hl].prevLayer = hl == 0 ? inputLayer : hiddenLayers[hl - 1];
 
-            for (int hpi = 0; hpi < thisLayer.perceptrons.Count; hpi++)
-                thisLayer.perceptrons[hpi] = new Perceptron(otherLayer.perceptrons[hpi]);
+            hiddenLayers[hl].nextLayer = hl == hiddenLayers.Count - 1 ? outputLayer : hiddenLayers[hl + 1];
         }
 
-        for (int opi = 0; opi < outputLayer.perceptrons.Count; opi++)
-            outputLayer.perceptrons[opi] = new Perceptron(other.outputLayer.perceptrons[opi]);
+        outputLayer.prevLayer = hiddenLayers.Last();
     }
 
     public Layer inputLayer { get; private set; } = new Layer();
