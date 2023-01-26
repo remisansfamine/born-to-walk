@@ -1967,7 +1967,7 @@ MonoBehaviour:
     sigmoidBeta: 1
     nbInputPerceptrons: 66
     nbHiddenPerceptrons: 46000000280000001e000000
-    nbOutputPerceptrons: 20
+    nbOutputPerceptrons: 10
   mlpInterpreter: {fileID: -8852353724872095595}
   headTarget: {fileID: 0}
 --- !u!114 &-8852353724872095595

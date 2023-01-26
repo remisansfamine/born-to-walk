@@ -30,13 +30,10 @@ public class PopulationManager : MonoBehaviour
     [SerializeField] private bool teleportTarget = true;
     [SerializeField] private bool reproduceGeneration = true;
 
+    [SerializeField] private bool useLayerIgnore = true;
+
     void Start()
     {
-        for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
-        {
-            for (int lbi = lai + 1; lbi < populationCount + layerOffset; lbi++)
-                Physics.IgnoreLayerCollision(lai, lbi, true);
-        }
 
         for (int i = 0; i < populationCount; i++)
         {
@@ -44,11 +41,20 @@ public class PopulationManager : MonoBehaviour
             population.Add(individualGen);    
         }
 
-        SetLayers();
+        if (useLayerIgnore)
+        {
+            for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
+            {
+                for (int lbi = lai + 1; lbi < populationCount + layerOffset; lbi++)
+                    Physics.IgnoreLayerCollision(lai, lbi, true);
+            }
+
+            SetLayers();
+        }
 
         generationCount++;
 
-        Time.timeScale = 3f;
+        Time.timeScale = 10f;
     }
 
     private void FixedUpdate()
@@ -140,7 +146,7 @@ public class PopulationManager : MonoBehaviour
         {
             Vector2 circle = Random.insideUnitCircle;
             circle.Normalize();
-            circle *= 75f;
+            circle *= 50f;
 
             headTarget.position = new Vector3(circle.x, headTarget.position.y, circle.y);
         }
@@ -177,7 +183,8 @@ public class PopulationManager : MonoBehaviour
 
         population = newPopulation;
 
-        SetLayers();
+        if (useLayerIgnore)
+            SetLayers();
 
         generationCount++;
     }

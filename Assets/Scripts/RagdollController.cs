@@ -44,21 +44,9 @@ public class RagdollController : MLPInterpreter
 
         foreach (Bone bone in bones)
         {
-            inputs.Add(bone.collisionSensor.contactPoint.x);
-            inputs.Add(bone.collisionSensor.contactPoint.y);
-            inputs.Add(bone.collisionSensor.contactPoint.z);
-
             inputs.Add(bone.rigidbody.transform.position.x);
             inputs.Add(bone.rigidbody.transform.position.y);
             inputs.Add(bone.rigidbody.transform.position.z);
-
-            inputs.Add(bone.rigidbody.transform.eulerAngles.x);
-            inputs.Add(bone.rigidbody.transform.eulerAngles.y);
-            inputs.Add(bone.rigidbody.transform.eulerAngles.z);
-
-            inputs.Add(bone.rigidbody.velocity.x);
-            inputs.Add(bone.rigidbody.velocity.y);
-            inputs.Add(bone.rigidbody.velocity.z);
 
             inputs.Add(bone.rigidbody.angularVelocity.x);
             inputs.Add(bone.rigidbody.angularVelocity.y);
