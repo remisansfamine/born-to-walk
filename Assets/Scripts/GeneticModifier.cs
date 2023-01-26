@@ -17,6 +17,7 @@ public class GeneticModifier : MonoBehaviour
 
     public float Fitness { get; private set; }
 
+
     public void Initialize(Transform _headTarget)
     {
         mlp.Initialize();
@@ -37,9 +38,10 @@ public class GeneticModifier : MonoBehaviour
     {
         float score = 0;
 
-        score = 1f / Mathf.Abs(headTarget.position.y - ragdollController.boneHead.position.y);
-        score = Mathf.Pow(5, score);
+        float distance = Vector3.Distance(headTarget.position, ragdollController.boneHead.position);
 
+        //score = Mathf.Exp(-distance);
+        score = 1f - distance / 10f;
         return score;
     }
 

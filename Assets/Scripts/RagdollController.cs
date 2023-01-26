@@ -3,21 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows;
 
-public struct Bone
+public class Bone
 {
     public Rigidbody rigidbody;
     public CollisionSensor collisionSensor;
+    public CharacterJoint characterJoint;
 
     public Bone(Rigidbody rb)
     {
-        collisionSensor = rb.GetComponent<CollisionSensor>();
         rigidbody = rb;
+        collisionSensor = rb.GetComponent<CollisionSensor>();
+        
+        rb.TryGetComponent(out characterJoint);
+
     }
 }
 
 public class RagdollController : MonoBehaviour
 {
-    [SerializeField] List<Rigidbody> bonesRigidbobies = new List<Rigidbody>();
+    [SerializeField] private Rigidbody bonesHipsRb;
+    [SerializeField] private List<Rigidbody> bonesRigidbobies = new List<Rigidbody>();
 
     public List<Bone> bones = new List<Bone>();
 
@@ -27,6 +32,8 @@ public class RagdollController : MonoBehaviour
     {
         foreach (Rigidbody rb in bonesRigidbobies)
             bones.Add(new Bone(rb));
+
+        bones.Add(new Bone(bonesHipsRb));
     }
 
     public List<float> GetInputs()
@@ -35,9 +42,25 @@ public class RagdollController : MonoBehaviour
 
         foreach (Bone bone in bones)
         {
-            inputs.Add(bone.collisionSensor.contactPoint.x);
+            /*inputs.Add(bone.collisionSensor.contactPoint.x);
             inputs.Add(bone.collisionSensor.contactPoint.y);
-            inputs.Add(bone.collisionSensor.contactPoint.z);
+            inputs.Add(bone.collisionSensor.contactPoint.z);*/
+
+            inputs.Add(bone.rigidbody.transform.position.x);
+            inputs.Add(bone.rigidbody.transform.position.y);
+            inputs.Add(bone.rigidbody.transform.position.z);
+
+            inputs.Add(bone.rigidbody.transform.eulerAngles.x);
+            inputs.Add(bone.rigidbody.transform.eulerAngles.y);
+            inputs.Add(bone.rigidbody.transform.eulerAngles.z);
+
+            inputs.Add(bone.rigidbody.velocity.x);
+            inputs.Add(bone.rigidbody.velocity.y);
+            inputs.Add(bone.rigidbody.velocity.z);
+
+            inputs.Add(bone.rigidbody.angularVelocity.x);
+            inputs.Add(bone.rigidbody.angularVelocity.y);
+            inputs.Add(bone.rigidbody.angularVelocity.z);
         }
 
         return inputs;
@@ -45,13 +68,10 @@ public class RagdollController : MonoBehaviour
 
     public void SetOuputs(List<float> outputs)
     {
-        for (int i = 0; i < bones.Count; ++i)
+        for (int i = 0; i < bones.Count - 1; ++i)
         {
-            int outputsIndex = i * 3;
-            Vector3 torque = new Vector3(outputs[outputsIndex], outputs[outputsIndex + 1], outputs[outputsIndex + 2 ]);
-            torque = torque * 2 - Vector3.one;
-
-            bones[i].rigidbody.AddTorque(torque * 1000f, ForceMode.Impulse);
+            float torque = outputs[i] * 2f - 1f;
+            bones[i].rigidbody.AddTorque(bones[i].characterJoint.swingAxis * (torque * 100f), ForceMode.Impulse);
         }
     }
 

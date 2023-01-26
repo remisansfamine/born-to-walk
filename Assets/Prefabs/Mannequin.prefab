@@ -303,6 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &8133470362878226311
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -459,6 +460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &6180787992620634569
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -965,6 +967,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &3467075012516116557
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1544,6 +1547,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!1 &4917445010127881744
 GameObject:
   m_ObjectHideFlags: 0
@@ -1654,6 +1658,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &5254814576043061950
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1873,6 +1878,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &5887352010801016913
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2093,8 +2099,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eee05a23a0cdaea4f98737f713e1d59c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bonesHipsRb: {fileID: 4839791807851880096}
   bonesRigidbobies:
-  - {fileID: 4839791807851880096}
   - {fileID: 5254814576043061951}
   - {fileID: 8175990280297992446}
   - {fileID: 6180787992620634570}
@@ -2123,11 +2129,11 @@ MonoBehaviour:
     useBias: 1
     initialWeightRange: 0.3
     hiddenLayerActivation: 2
-    outputLayerActivation: 1
+    outputLayerActivation: 2
     sigmoidBeta: 1
-    nbInputPerceptrons: 33
-    nbHiddenPerceptrons: 0f0000000f0000000f000000
-    nbOutputPerceptrons: 33
+    nbInputPerceptrons: 132
+    nbHiddenPerceptrons: 400000004000000040000000
+    nbOutputPerceptrons: 10
   ragdollController: {fileID: 6032817042039257143}
 --- !u!1 &6660401964637897045
 GameObject:
@@ -2207,6 +2213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &6660401964637897044
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2492,6 +2499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &7662419594530918417
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2680,6 +2688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &4667009081527775661
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2836,6 +2845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &8175990280297992447
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -3090,6 +3100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
 --- !u!144 &8947929631660119005
 CharacterJoint:
   m_ObjectHideFlags: 0

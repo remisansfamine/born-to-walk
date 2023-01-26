@@ -27,13 +27,10 @@ public class PopulationManager : MonoBehaviour
 
     void Start()
     {
-        for (int lai = layerOffset; lai < populationCount; lai++)
+        for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
         {
             for (int lbi = lai + 1; lbi < populationCount + layerOffset; lbi++)
-            {
-                Debug.Log(LayerMask.LayerToName(lai) + " ; "+ LayerMask.LayerToName(lbi));
                 Physics.IgnoreLayerCollision(lai, lbi, true);
-            }
         }
 
         for (int i = 0; i < populationCount; i++)
@@ -46,7 +43,7 @@ public class PopulationManager : MonoBehaviour
 
         generationCount++;
 
-        Time.timeScale = 5f;
+        Time.timeScale = 2f;
     }
 
     private void FixedUpdate()
@@ -94,6 +91,7 @@ public class PopulationManager : MonoBehaviour
         }
 
         BestFitness = best.Fitness;
+        Debug.Log("BestFitness:" + BestFitness);
 
         //TODO: le loup
         BestGens.Add(best.MLP.Clone() as MLPNetwork);
@@ -101,7 +99,7 @@ public class PopulationManager : MonoBehaviour
 
     private GeneticModifier ChooseParent()
     {
-        float randomNumber = Random.Range(0f, 1f) * fitnessSum;
+        float randomNumber = Random.Range(0f, fitnessSum);
 
         for (int i = 0; i < population.Count; i++)
         {
