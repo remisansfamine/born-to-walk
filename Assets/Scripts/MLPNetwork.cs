@@ -139,6 +139,10 @@ public class MLPNetwork
 
     public void Initialize()
     {
+        hiddenLayers.Clear();
+        inputLayer = new Layer();
+        outputLayer = new Layer();
+
         InitPerceptrons();
     }
 

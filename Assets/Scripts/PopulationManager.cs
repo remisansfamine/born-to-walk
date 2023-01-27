@@ -1,6 +1,6 @@
+using Assets.Scripts;
 using System.Collections.Generic;
 using UnityEngine;
-using Assets.Scripts;
 
 public class PopulationManager : MonoBehaviour
 {
@@ -12,6 +12,7 @@ public class PopulationManager : MonoBehaviour
 
     [SerializeField] private Transform headTarget = null;
 
+    private List<GeneticModifier> pooledPopulation = new List<GeneticModifier>();
     private List<GeneticModifier> population = new List<GeneticModifier>();
 
     public float BestFitness { get; private set; }
@@ -31,13 +32,15 @@ public class PopulationManager : MonoBehaviour
     [SerializeField] private bool reproduceGeneration = true;
 
     [SerializeField] private bool useLayerIgnore = true;
+    [SerializeField] private bool useGridLayer = false;
 
     void Start()
     {
+        Initialize();
 
         for (int i = 0; i < populationCount; i++)
         {
-            GeneticModifier individualGen =  InstantiateIndividual();
+            GeneticModifier individualGen =  InstantiateIndividual(population.Count);
             population.Add(individualGen);    
         }
 
@@ -56,6 +59,30 @@ public class PopulationManager : MonoBehaviour
 
         Time.timeScale = 1f;
         Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
+    }
+
+    public void Initialize()
+    {
+        int objectToPoolCount = populationCount * 2;
+        for (int i = 0; i < objectToPoolCount; ++i)
+        {
+            GameObject populationObject = Instantiate(m_individualPrefab);
+            GeneticModifier geneticModifier = populationObject.GetComponent<GeneticModifier>();
+            pooledPopulation.Add(geneticModifier);
+
+            geneticModifier.gameObject.SetActive(false);
+        }
+    }
+
+    public GeneticModifier GetPooledIndividu()
+    {
+        for (int i = 0; i < pooledPopulation.Count; ++i)
+        {
+            if (!pooledPopulation[i].gameObject.activeSelf)
+                return pooledPopulation[i];
+        }
+
+        return null;
     }
 
     private void FixedUpdate()
@@ -77,16 +104,21 @@ public class PopulationManager : MonoBehaviour
         }
     }
 
-    private GeneticModifier InstantiateIndividual()
+    private GeneticModifier InstantiateIndividual(int currentPopulationCount)
     {
-        GameObject individual = Instantiate(m_individualPrefab, m_spawnPoint.position, m_spawnPoint.rotation);
+        int i = currentPopulationCount;
 
-        int i = population.Count - 1;
+        int maxColumn = 10;
+        Vector3 spawnPosition = m_spawnPoint.position + new Vector3(4f * (i / 10), 0f, 4f * (i % 10));
 
-        GeneticModifier geneticModifier = individual.GetComponent<GeneticModifier>();
-        geneticModifier.Initialize(headTarget);
+        GeneticModifier individual = GetPooledIndividu();
+        individual.transform.position = spawnPosition;
+        individual.transform.rotation = m_spawnPoint.rotation;
 
-        return geneticModifier;
+        individual.Initialize(headTarget);
+        individual.gameObject.SetActive(true);
+
+        return individual;
     }
 
     private void CalculateFitnessSum()
@@ -106,7 +138,7 @@ public class PopulationManager : MonoBehaviour
         Debug.Log("BestFitness:" + BestFitness);
 
         //TODO: le loup
-        BestGens.Add(best.mlp.Clone() as MLPNetwork);
+        //BestGens.Add(best.mlp.Clone() as MLPNetwork);
     }
 
     private GeneticModifier ChooseParent(List<GeneticModifier> possibleParents)
@@ -145,14 +177,13 @@ public class PopulationManager : MonoBehaviour
             headTarget.position = new Vector3(circle.x, 0f, circle.y);
         }
 
-
         List<GeneticModifier> newPopulation = new List<GeneticModifier>();
 
         for (int i = 0; i < population.Count; ++i)
         {
             if (i < elitism)
             {
-                GeneticModifier child = InstantiateIndividual();
+                GeneticModifier child = InstantiateIndividual(newPopulation.Count);
                 child.mlp = new MLPNetwork(population[i].mlp);
                 newPopulation.Add(child);
             }
@@ -165,7 +196,7 @@ public class PopulationManager : MonoBehaviour
 
                 GeneticModifier parentB = ChooseParent(possibleParents);
 
-                GeneticModifier child = InstantiateIndividual();
+                GeneticModifier child = InstantiateIndividual(newPopulation.Count);
 
                 GeneticModifier.Crossover(ref child, parentA, parentB);
 
@@ -176,7 +207,7 @@ public class PopulationManager : MonoBehaviour
         }
 
         for (int i = 0; i < population.Count; ++i)
-            Destroy(population[i].gameObject);
+            population[i].gameObject.SetActive(false);
 
         population = newPopulation;
 

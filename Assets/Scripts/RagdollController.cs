@@ -10,13 +10,35 @@ public class Bone
     public CollisionSensor collisionSensor;
     public CharacterJoint characterJoint;
 
+    public Vector3 position;
+    public Quaternion rotation;
+
     public Bone(Rigidbody rb)
     {
         rigidbody = rb;
         rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        rigidbody.interpolation = RigidbodyInterpolation.Extrapolate;
         collisionSensor = rb.GetComponent<CollisionSensor>();
         
         rb.TryGetComponent(out characterJoint);
+
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        Transform boneTransform = rigidbody.transform;
+        position = boneTransform.localPosition;
+        rotation = boneTransform.localRotation;
+    }
+
+    public void Reset()
+    {
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
+
+        rigidbody.transform.localPosition = position;
+        rigidbody.transform.localRotation = rotation;
 
     }
 }
@@ -38,6 +60,12 @@ public class RagdollController : MLPInterpreter
             bones.Add(new Bone(rb));
 
         bones.Add(new Bone(bonesHipsRb));
+    }
+
+    public override void Initialize()
+    {
+        foreach (Bone b in bones)
+            b.Reset();
     }
 
     public override List<float> GetInputs()
@@ -74,7 +102,9 @@ public class RagdollController : MLPInterpreter
     {
         float distance = Vector3.Distance(modifier.headTarget.position, boneHead.position);
         float headHeightScore =  boneHead.position.y / 2.5f;
+
         Debug.Log("BoneHeadPos:" + boneHead.position);
+        Debug.Log("distance:" + distance);
         float score = (1f - Mathf.Clamp(distance, 0.01f, 20f) / 20f) * 0f + headHeightScore * 1f;
 
         return score;

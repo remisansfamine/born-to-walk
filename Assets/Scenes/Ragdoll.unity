@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328015552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.05, z: 0}
+  m_LocalPosition: {x: -45, y: 0.05, z: -45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -424,7 +424,7 @@ Transform:
   m_GameObject: {fileID: 970077975}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.07564718, y: 0, z: -1.6868482}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 15, y: 1, z: 15}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -461,16 +461,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_individualPrefab: {fileID: 6409483799035142794, guid: 2f5cc0ffeafab5146a8494068eb7e3a2, type: 3}
   m_spawnPoint: {fileID: 328015553}
-  populationCount: 26
+  populationCount: 200
   layerOffset: 6
   headTarget: {fileID: 1172384566}
   BestGens: []
   mutationRate: 0.5
-  maxFixedStep: 100
-  elitism: 3
+  maxFixedStep: 150
+  elitism: 20
   teleportTarget: 0
   reproduceGeneration: 1
-  useLayerIgnore: 1
+  useLayerIgnore: 0
+  useGridLayer: 0
 --- !u!4 &1034128559
 Transform:
   m_ObjectHideFlags: 0

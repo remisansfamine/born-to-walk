@@ -16,6 +16,11 @@ public class CubeController : MLPInterpreter
         collisionSensor = GetComponent<CollisionSensor>();
     }
 
+    public override void Initialize()
+    {
+        cubeRigidbody.velocity = Vector3.zero;
+    }
+
     public override List<float> GetInputs()
     {
         List<float> inputs = new List<float>();

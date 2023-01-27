@@ -9,7 +9,7 @@ public class GeneticModifier : MonoBehaviour
 {
     public MLPNetwork mlp = new MLPNetwork();
 
-    [SerializeField] private MLPInterpreter mlpInterpreter;
+    public MLPInterpreter mlpInterpreter;
 
     public Transform headTarget = null;
 
@@ -19,6 +19,7 @@ public class GeneticModifier : MonoBehaviour
     public void Initialize(Transform _headTarget)
     {
         mlp.Initialize();
+        mlpInterpreter.Initialize();
         headTarget = _headTarget;
     }
 
@@ -27,6 +28,7 @@ public class GeneticModifier : MonoBehaviour
         List<float> inputs = mlpInterpreter.GetInputs();
 
         Vector3 dir = transform.position - headTarget.position;
+
         inputs.Add(dir.x);
         inputs.Add(dir.y);
         inputs.Add(dir.z);
