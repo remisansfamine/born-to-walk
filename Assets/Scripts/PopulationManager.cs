@@ -54,7 +54,7 @@ public class PopulationManager : MonoBehaviour
 
         generationCount++;
 
-        Time.timeScale = 10f;
+        Time.timeScale = 1f;
         Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
     }
 
@@ -137,11 +137,12 @@ public class PopulationManager : MonoBehaviour
 
         if (teleportTarget)
         {
-            Vector3 circle = Random.insideUnitSphere;
+            //Vector3 circle = Random.insideUnitSphere;
+            Vector2 circle = Random.insideUnitCircle;
             circle.Normalize();
-            circle *= 50f;
+            circle *= 25f;
 
-            headTarget.position = new Vector3(circle.x, circle.y, circle.z);
+            headTarget.position = new Vector3(circle.x, 0f, circle.y);
         }
 
 

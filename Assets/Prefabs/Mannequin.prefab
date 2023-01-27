@@ -2133,8 +2133,8 @@ MonoBehaviour:
     hiddenLayerActivation: 1
     outputLayerActivation: 1
     sigmoidBeta: 1
-    nbInputPerceptrons: 69
-    nbHiddenPerceptrons: 4b000000400000001e000000
+    nbInputPerceptrons: 3
+    nbHiddenPerceptrons: 14000000140000001400000014000000
     nbOutputPerceptrons: 20
   mlpInterpreter: {fileID: 6032817042039257143}
   headTarget: {fileID: 0}

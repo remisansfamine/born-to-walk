@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.Windows;
 
 public class Bone
@@ -42,7 +43,7 @@ public class RagdollController : MLPInterpreter
     {
         List<float> inputs = new List<float>();
 
-        foreach (Bone bone in bones)
+        /*foreach (Bone bone in bones)
         {
             inputs.Add(bone.rigidbody.transform.position.x);
             inputs.Add(bone.rigidbody.transform.position.y);
@@ -51,7 +52,7 @@ public class RagdollController : MLPInterpreter
             inputs.Add(bone.rigidbody.angularVelocity.x);
             inputs.Add(bone.rigidbody.angularVelocity.y);
             inputs.Add(bone.rigidbody.angularVelocity.z);
-        }
+        }*/
 
         return inputs;
     }
@@ -63,15 +64,16 @@ public class RagdollController : MLPInterpreter
             float torque = outputs[i];
             float swingTorque =  outputs[i * 2];
 
-            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.axis * (torque * 100f), ForceMode.Impulse);
-            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.swingAxis * (swingTorque * 100f), ForceMode.Impulse);
+            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.axis * (torque * 1000f), ForceMode.Impulse);
+            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.swingAxis * (swingTorque * 1000f), ForceMode.Impulse);
         }
     }
 
     public override float FitnessFunction(GeneticModifier modifier)
     {
         float distance = Vector3.Distance(modifier.headTarget.position, boneHead.position);
-        float score = Mathf.Exp(-distance);
+        float headHeightScore =  1 - boneHead.position.y / 10f;
+        float score = (1f - Mathf.Clamp(distance, 0.01f, 20f) / 20f) * 0.6f + headHeightScore * 0.4f;
 
         return score;
     }
