@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts;
+using UnityEngine.Windows;
+using System.Linq;
+using Newtonsoft.Json;
 
 public class PopulationManager : MonoBehaviour
 {
@@ -32,8 +35,18 @@ public class PopulationManager : MonoBehaviour
 
     [SerializeField] private bool useLayerIgnore = true;
 
+    private float initialFixedDeltaTime = 0;
+
+    [SerializeField] private float timeScale = 1f;
+
+    private void Awake()
+    {
+        
+    }
+
     void Start()
     {
+        initialFixedDeltaTime = Time.fixedDeltaTime;
 
         for (int i = 0; i < populationCount; i++)
         {
@@ -54,8 +67,12 @@ public class PopulationManager : MonoBehaviour
 
         generationCount++;
 
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
+    }
+
+    private void Update()
+    {
+        Time.timeScale = timeScale;
+        Time.fixedDeltaTime = initialFixedDeltaTime * Time.timeScale;
     }
 
     private void FixedUpdate()
@@ -80,8 +97,6 @@ public class PopulationManager : MonoBehaviour
     private GeneticModifier InstantiateIndividual()
     {
         GameObject individual = Instantiate(m_individualPrefab, m_spawnPoint.position, m_spawnPoint.rotation);
-
-        int i = population.Count - 1;
 
         GeneticModifier geneticModifier = individual.GetComponent<GeneticModifier>();
         geneticModifier.Initialize(headTarget);
@@ -175,8 +190,7 @@ public class PopulationManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < population.Count; ++i)
-            Destroy(population[i].gameObject);
+        DestroyPopulation();
 
         population = newPopulation;
 
@@ -185,5 +199,52 @@ public class PopulationManager : MonoBehaviour
 
         generationCount++;
     }
-    
+
+    void DestroyPopulation()
+    {
+        for (int i = 0; i < population.Count; ++i)
+            Destroy(population[i].gameObject);
+
+        population.Clear();
+    }
+
+    public void SaveToJSON(string filename)
+    {
+        string directory = "SavedNeuralNetworks/";
+        string dirpath = directory;
+
+        if (!Directory.Exists(dirpath))
+            Directory.CreateDirectory(dirpath);
+
+        string jsonStr = JsonConvert.SerializeObject(population.Select((GeneticModifier individual) => individual.mlp));
+
+        System.IO.File.WriteAllText(dirpath + "/" + filename, jsonStr);
+    }    
+
+    public void LoadFromJSON(string filename)
+    {
+        string directory = "SavedNeuralNetworks/";
+        string dirpath = directory;
+
+        string fullpath = dirpath + "/" + filename;
+
+        DestroyPopulation();
+
+        if (System.IO.File.Exists(fullpath))
+        {
+            string jsonStr = System.IO.File.ReadAllText(fullpath);
+
+            List<MLPNetwork> mlpList = JsonConvert.DeserializeObject(jsonStr, typeof(List<MLPNetwork>)) as List<MLPNetwork>;
+            populationCount = mlpList.Count;
+
+            foreach (MLPNetwork mlp in mlpList)
+            {
+                mlp.LinkLayers();
+
+                GeneticModifier individualGen = InstantiateIndividual();
+                individualGen.mlp = mlp;
+                population.Add(individualGen);
+            }
+        }
+    }
 }
