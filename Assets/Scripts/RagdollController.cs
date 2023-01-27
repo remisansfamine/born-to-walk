@@ -13,6 +13,7 @@ public class Bone
     public Bone(Rigidbody rb)
     {
         rigidbody = rb;
+        rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
         collisionSensor = rb.GetComponent<CollisionSensor>();
         
         rb.TryGetComponent(out characterJoint);
@@ -72,8 +73,9 @@ public class RagdollController : MLPInterpreter
     public override float FitnessFunction(GeneticModifier modifier)
     {
         float distance = Vector3.Distance(modifier.headTarget.position, boneHead.position);
-        float headHeightScore =  1 - boneHead.position.y / 10f;
-        float score = (1f - Mathf.Clamp(distance, 0.01f, 20f) / 20f) * 0.6f + headHeightScore * 0.4f;
+        float headHeightScore =  boneHead.position.y / 2.5f;
+        Debug.Log("BoneHeadPos:" + boneHead.position);
+        float score = (1f - Mathf.Clamp(distance, 0.01f, 20f) / 20f) * 0f + headHeightScore * 1f;
 
         return score;
     }
