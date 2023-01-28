@@ -1,10 +1,11 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using UnityEngine;
 
-enum EActivationType
+public enum EActivationType
 {
     RELU,
     TANH,
@@ -12,6 +13,7 @@ enum EActivationType
     NONE,
 }
 
+[System.Serializable]
 public class Perceptron
 {
     public float initialWeightRange = 1.0f;
@@ -21,6 +23,7 @@ public class Perceptron
     public float state = 0f;
     public float error = 0f;
 
+    public Perceptron() { }
     public Perceptron(Perceptron other)
     {
         initialWeightRange = other.initialWeightRange;
@@ -52,10 +55,15 @@ public class Perceptron
     }
 }
 
+[System.Serializable]
 public class Layer
 {
     public List<Perceptron> perceptrons = new List<Perceptron>();
+
+    [JsonIgnore]
     public Layer prevLayer = null;
+
+    [JsonIgnore]
     public Layer nextLayer = null;
 
     public void InitPerceptrons(int nbPerceptrons, float initialWeightRange, int nbPrevLayerPerceptrons)
@@ -64,10 +72,7 @@ public class Layer
             perceptrons.Add(new Perceptron(nbPrevLayerPerceptrons, initialWeightRange));
     }
 
-    public Layer()
-    {
-
-    }
+    public Layer() { }
 
     public Layer(Layer other)
     {
@@ -79,18 +84,18 @@ public class Layer
 [System.Serializable]
 public class MLPNetwork
 {
-    [SerializeField] private float gain = 0.3f;
-    [SerializeField] private bool useBias = false;
-    [SerializeField] private float initialWeightRange = 0.3f;
+    [SerializeField] public float gain = 0.3f;
+    [SerializeField] public bool useBias = false;
+    [SerializeField] public float initialWeightRange = 0.3f;
 
-    [SerializeField] private EActivationType hiddenLayerActivation = EActivationType.SIGMOID;
-    [SerializeField] private EActivationType outputLayerActivation = EActivationType.TANH;
+    [SerializeField] public EActivationType hiddenLayerActivation = EActivationType.SIGMOID;
+    [SerializeField] public EActivationType outputLayerActivation = EActivationType.TANH;
 
-    [SerializeField] private float sigmoidBeta = 1f;
+    [SerializeField] public float sigmoidBeta = 1f;
 
-    [SerializeField] private int nbInputPerceptrons = 2;
-    [SerializeField] private List<int> nbHiddenPerceptrons = new List<int>();
-    [SerializeField] private int nbOutputPerceptrons = 1;
+    [SerializeField] public int nbInputPerceptrons = 2;
+    [SerializeField] public List<int> nbHiddenPerceptrons = new List<int>();
+    [SerializeField] public int nbOutputPerceptrons = 1;
 
     public MLPNetwork() { }
 
@@ -119,8 +124,20 @@ public class MLPNetwork
 
         outputLayer = new Layer(other.outputLayer);
 
+        LinkLayers();
+    }
 
+    public Layer inputLayer { get; private set; } = new Layer();
+    public List<Layer> hiddenLayers { get; private set; } = new List<Layer>();
+    public Layer outputLayer { get; private set; } = new Layer();
 
+    public void Initialize()
+    {
+        InitPerceptrons();
+    }
+
+    public void LinkLayers()
+    {
         inputLayer.nextLayer = hiddenLayers.First();
 
         for (int hl = 0; hl < hiddenLayers.Count; hl++)
@@ -131,15 +148,6 @@ public class MLPNetwork
         }
 
         outputLayer.prevLayer = hiddenLayers.Last();
-    }
-
-    public Layer inputLayer { get; private set; } = new Layer();
-    public List<Layer> hiddenLayers { get; private set; } = new List<Layer>();
-    public Layer outputLayer { get; private set; } = new Layer();
-
-    public void Initialize()
-    {
-        InitPerceptrons();
     }
 
     private void InitPerceptrons()
@@ -163,16 +171,7 @@ public class MLPNetwork
 
         outputLayer.InitPerceptrons(nbOutputPerceptrons, initialWeightRange, lastLayerPeceptronCount);
 
-        inputLayer.nextLayer = hiddenLayers.First();
-
-        for (int hl = 0; hl < hiddenLayers.Count; hl++)
-        {
-            hiddenLayers[hl].prevLayer = hl == 0 ? inputLayer : hiddenLayers[hl - 1];
-
-            hiddenLayers[hl].nextLayer = hl == hiddenLayers.Count - 1 ? outputLayer : hiddenLayers[hl + 1];
-        }
-
-        outputLayer.prevLayer = hiddenLayers.Last();
+        LinkLayers();
     }
 
     float SigmoidThreshold(float input) => 1f / (1f + Mathf.Exp(-sigmoidBeta * input));

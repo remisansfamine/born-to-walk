@@ -1,43 +1,50 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts;
+using UnityEngine.Windows;
+using System.Linq;
+using Newtonsoft.Json;
 
 public class PopulationManager : MonoBehaviour
 {
+    [Header("Instantiation settings")]
     [SerializeField] private GameObject m_individualPrefab = null;
-    [SerializeField] private Transform m_spawnPoint = null;
-
+    [SerializeField] private Transform spawnPoint = null;
     [SerializeField] private int populationCount = 0;
+    [SerializeField] private bool useGrid = false;
+    [SerializeField] private int maxColumnCount = 5;
+    [SerializeField] private float spacing = 4f;
+
+    [SerializeField] private bool useLayerIgnore = true;
     [SerializeField] private int layerOffset = 6;
 
+    [Header("Generation settings")]
+    [SerializeField] private bool reproduceGeneration = true;
+    [SerializeField] private float mutationRate = 0.01f;
+    [SerializeField] private int maxFixedStep = 0;
+    [SerializeField] private float timeScale = 1f;
+    [Tooltip("Elite count")]
+    [SerializeField] private int elitism = 0;
+
+    [Header("Goal")]
     [SerializeField] private Transform headTarget = null;
+    [SerializeField] private bool teleportTarget = true;
 
     private List<GeneticModifier> population = new List<GeneticModifier>();
 
-    public float BestFitness { get; private set; }
-    public List<MLPNetwork> BestGens = new List<MLPNetwork>();
-
     private float fitnessSum = 0;
-    [SerializeField] private float mutationRate = 0.01f;
-
     private int generationCount = 0;
-
-    [SerializeField] private int maxFixedStep = 0;
     private int currentFixedStep = 0;
 
-    [SerializeField] private int elitism = 0;
-
-    [SerializeField] private bool teleportTarget = true;
-    [SerializeField] private bool reproduceGeneration = true;
-
-    [SerializeField] private bool useLayerIgnore = true;
+    private float initialFixedDeltaTime = 0;
 
     void Start()
     {
+        initialFixedDeltaTime = Time.fixedDeltaTime;
 
         for (int i = 0; i < populationCount; i++)
         {
-            GeneticModifier individualGen =  InstantiateIndividual();
+            GeneticModifier individualGen =  InstantiateIndividual(population.Count);
             population.Add(individualGen);    
         }
 
@@ -54,8 +61,12 @@ public class PopulationManager : MonoBehaviour
 
         generationCount++;
 
-        Time.timeScale = 1f;
-        Time.fixedDeltaTime = Time.fixedDeltaTime * Time.timeScale;
+    }
+
+    private void Update()
+    {
+        Time.timeScale = timeScale;
+        Time.fixedDeltaTime = initialFixedDeltaTime * Time.timeScale;
     }
 
     private void FixedUpdate()
@@ -77,11 +88,16 @@ public class PopulationManager : MonoBehaviour
         }
     }
 
-    private GeneticModifier InstantiateIndividual()
+    private GeneticModifier InstantiateIndividual(int currentPopulationCount)
     {
-        GameObject individual = Instantiate(m_individualPrefab, m_spawnPoint.position, m_spawnPoint.rotation);
+        Vector3 spawnPointPos = spawnPoint.position;
 
-        int i = population.Count - 1;
+        if (useGrid)
+        {
+            spawnPointPos += new Vector3(spacing * (currentPopulationCount % maxColumnCount), 0f, spacing * (currentPopulationCount / maxColumnCount));
+        }
+
+        GameObject individual = Instantiate(m_individualPrefab, spawnPointPos, spawnPoint.rotation);
 
         GeneticModifier geneticModifier = individual.GetComponent<GeneticModifier>();
         geneticModifier.Initialize(headTarget);
@@ -102,11 +118,7 @@ public class PopulationManager : MonoBehaviour
                 best = population[i];
         }
 
-        BestFitness = best.Fitness;
-        Debug.Log("BestFitness:" + BestFitness);
-
-        //TODO: le loup
-        BestGens.Add(best.mlp.Clone() as MLPNetwork);
+        Debug.Log("Best Fitness:" + best.Fitness);
     }
 
     private GeneticModifier ChooseParent(List<GeneticModifier> possibleParents)
@@ -152,7 +164,7 @@ public class PopulationManager : MonoBehaviour
         {
             if (i < elitism)
             {
-                GeneticModifier child = InstantiateIndividual();
+                GeneticModifier child = InstantiateIndividual(newPopulation.Count);
                 child.mlp = new MLPNetwork(population[i].mlp);
                 newPopulation.Add(child);
             }
@@ -165,7 +177,7 @@ public class PopulationManager : MonoBehaviour
 
                 GeneticModifier parentB = ChooseParent(possibleParents);
 
-                GeneticModifier child = InstantiateIndividual();
+                GeneticModifier child = InstantiateIndividual(newPopulation.Count);
 
                 GeneticModifier.Crossover(ref child, parentA, parentB);
 
@@ -175,8 +187,7 @@ public class PopulationManager : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < population.Count; ++i)
-            Destroy(population[i].gameObject);
+        DestroyPopulation();
 
         population = newPopulation;
 
@@ -185,5 +196,52 @@ public class PopulationManager : MonoBehaviour
 
         generationCount++;
     }
-    
+
+    void DestroyPopulation()
+    {
+        for (int i = 0; i < population.Count; ++i)
+            Destroy(population[i].gameObject);
+
+        population.Clear();
+    }
+
+    public void SaveToJSON(string filename)
+    {
+        string directory = "SavedNeuralNetworks/";
+        string dirpath = directory;
+
+        if (!Directory.Exists(dirpath))
+            Directory.CreateDirectory(dirpath);
+
+        string jsonStr = JsonConvert.SerializeObject(population.Select((GeneticModifier individual) => individual.mlp));
+
+        System.IO.File.WriteAllText(dirpath + "/" + filename, jsonStr);
+    }    
+
+    public void LoadFromJSON(string filename)
+    {
+        string directory = "SavedNeuralNetworks/";
+        string dirpath = directory;
+
+        string fullpath = dirpath + "/" + filename;
+
+        DestroyPopulation();
+
+        if (System.IO.File.Exists(fullpath))
+        {
+            string jsonStr = System.IO.File.ReadAllText(fullpath);
+
+            List<MLPNetwork> mlpList = JsonConvert.DeserializeObject(jsonStr, typeof(List<MLPNetwork>)) as List<MLPNetwork>;
+            populationCount = mlpList.Count;
+
+            foreach (MLPNetwork mlp in mlpList)
+            {
+                mlp.LinkLayers();
+
+                GeneticModifier individualGen = InstantiateIndividual(population.Count);
+                individualGen.mlp = mlp;
+                population.Add(individualGen);
+            }
+        }
+    }
 }

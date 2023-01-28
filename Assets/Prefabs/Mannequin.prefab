@@ -271,10 +271,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.1269026
-  m_Height: 0.5076104
+  m_Radius: 0.12677424
+  m_Height: 0.4465959
   m_Direction: 1
-  m_Center: {x: 0, y: 0.2538052, z: 0}
+  m_Center: {x: -1.0459669e-10, y: 0.22330034, z: -1.8274113e-10}
 --- !u!54 &8133470362878226310
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -304,6 +304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &8133470362878226311
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -461,6 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &6180787992620634569
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -968,6 +970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &3467075012516116557
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1107,6 +1110,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5947818944193463117}
+  - {fileID: 7250900874426196620}
   m_Father: {fileID: 4187124345200385244}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1434,6 +1438,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7591874045033887849}
+  - {fileID: 198393534519273276}
   m_Father: {fileID: 8133470362878226304}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1548,6 +1553,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!1 &4917445010127881744
 GameObject:
   m_ObjectHideFlags: 0
@@ -1659,6 +1665,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &5254814576043061950
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -1879,6 +1886,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &5887352010801016913
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2114,6 +2122,12 @@ MonoBehaviour:
   boneHead: {fileID: 4511646032618266106}
   boneLeftArm: {fileID: 0}
   boneRightArm: {fileID: 0}
+  torso: {fileID: 6490520782847404167}
+  leftLeg: {fileID: 4187124345200385244}
+  rightLeg: {fileID: 8133470362878226304}
+  footCollisionSensor:
+  - {fileID: 7687345458790122174}
+  - {fileID: 8033170128307773948}
 --- !u!114 &8530817402829550729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2133,8 +2147,8 @@ MonoBehaviour:
     hiddenLayerActivation: 1
     outputLayerActivation: 1
     sigmoidBeta: 1
-    nbInputPerceptrons: 3
-    nbHiddenPerceptrons: 14000000140000001400000014000000
+    nbInputPerceptrons: 129
+    nbHiddenPerceptrons: 820000008200000082000000
     nbOutputPerceptrons: 20
   mlpInterpreter: {fileID: 6032817042039257143}
   headTarget: {fileID: 0}
@@ -2217,6 +2231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &6660401964637897044
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2503,6 +2518,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &7662419594530918417
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2549,6 +2565,66 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!1 &7679313092716561166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 198393534519273276}
+  - component: {fileID: 3431247588648592270}
+  - component: {fileID: 8033170128307773948}
+  m_Layer: 0
+  m_Name: FootCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &198393534519273276
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7679313092716561166}
+  m_LocalRotation: {x: 0.28683773, y: -0.033803456, z: -0.054626502, w: 0.95582294}
+  m_LocalPosition: {x: -0.011594346, y: 0.057562236, z: -0.039997887}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6329026593833536657}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 33, y: -6.57, z: -8.49}
+--- !u!65 &3431247588648592270
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7679313092716561166}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.16, y: 0.2, z: 0.05}
+  m_Center: {x: 0, y: 0.03, z: 0}
+--- !u!114 &8033170128307773948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7679313092716561166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!1 &7850748691141972907
 GameObject:
   m_ObjectHideFlags: 0
@@ -2692,6 +2768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &4667009081527775661
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2817,9 +2894,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.12677424
-  m_Height: 0.50709695
+  m_Height: 0.4465959
   m_Direction: 1
-  m_Center: {x: 0, y: 0.25354847, z: 0}
+  m_Center: {x: -1.0459669e-10, y: 0.22330034, z: -1.8274113e-10}
 --- !u!54 &8175990280297992446
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2849,6 +2926,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &8175990280297992447
 CharacterJoint:
   m_ObjectHideFlags: 0
@@ -2962,6 +3040,66 @@ Transform:
   m_Father: {fileID: 8274526066894981525}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8474424250246745016
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7250900874426196620}
+  - component: {fileID: 366657288782159821}
+  - component: {fileID: 7687345458790122174}
+  m_Layer: 0
+  m_Name: FootCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7250900874426196620
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8474424250246745016}
+  m_LocalRotation: {x: 0.28405544, y: 0.047369473, z: -0.0064087594, w: 0.9576156}
+  m_LocalPosition: {x: -0.005, y: 0.056, z: -0.039}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1584219705009241186}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 33, y: 5.96, z: 1}
+--- !u!65 &366657288782159821
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8474424250246745016}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.16, y: 0.2, z: 0.05}
+  m_Center: {x: 0.02, y: 0.03, z: 0}
+--- !u!114 &7687345458790122174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8474424250246745016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61bf055d087ca6f439cdb17b81cc991a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!1 &8721750458736493452
 GameObject:
   m_ObjectHideFlags: 0
@@ -3104,6 +3242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contactPoint: {x: 0, y: 0, z: 0}
+  hasCollisionPoint: 0
 --- !u!144 &8947929631660119005
 CharacterJoint:
   m_ObjectHideFlags: 0
