@@ -16,10 +16,12 @@ The goal of this project is to apply the principles of learning in a video game 
 
 # Table of contents
 1. [Features](#features)
+1. [Controls](#controls)
 2. [Details](#details)
     - [Ragdoll Implementation](#ragdoll-implementation)
+    - [Genetic Algorithm Implementation](#genetic-algorithm-implementation)
 3. [In the future](#itf)
-4. [Reference](#references)
+4. [References](#references)
 5. [Versionning](#versionning)
 6. [Autors](#authors)
 
@@ -30,9 +32,14 @@ The goal of this project is to apply the principles of learning in a video game 
 - MLP and genetic population serialization
 - Basic training for a ragdoll to stand up
 
+# Controls
+There is no character controller, to navigate in the scene you have to use the scene viewer no clip mode.
+- To change the current scene you have to use the Unity Content Browser.
+- To Save or Load you can use the UI.
+
 # Details
 
-## Genetic algorithm implementation
+## Genetic Algorithm Implementation
 We decided to implement a genetic algorithm to teach a ragdoll to walk by natural selection.
 
 To integrate a genetic algorithm with MLP in the project, 
@@ -87,7 +94,7 @@ public static void Crossover(ref GeneticModifier child, in GeneticModifier paren
 ```
 
 When the crossover is completed, a mutation of this new child is performed according to a mutation rate.
-Each neuron weight has a chance to mutate according to the mutation rate, if a neuron is mutated a weight between -0.1 and 0.1 is added
+Each neuron weight has a chance to mutate according to the mutation rate, if a neuron is mutated a weight between -0.1 and 0.1 is added.
 
 ```cs
 public void Mutate(float mutationRate)
@@ -184,6 +191,82 @@ public static void SetLayerRecursively(this GameObject obj, int newLayer)
 *Ragdoll training without collisions*
 </div>
 
+## Stages of development
+When we started the project, we took as an ambitious goal to train an AI to walk. We knew it wasn't going to be possible in a week, but we took the challenge. We first started to develop the interface for the MLP to interact with the Ragdoll. Then we implemented the genetic algorithms using the MLP.
+
+<div style="text-align:center">
+
+![Cubes](Annexes/Cubes.gif)
+
+*ML-Agents training where the cubes (in blue) must reach their goal (in red).*
+</div>
+
+<div style="text-align:center">
+
+![Cubes](Annexes/HyperTrainedCubes.gif)
+
+*Super trained ML-Agents cubes.*
+</div>
+
+After developing a solid genetic algorithm, we decided to be less ambitious and to first train ragdolls able to raise an arm in a direction. And this was a succes.
+
+<div style="text-align:center">
+
+![LeftArmLow](Annexes/LeftArmLow.gif)
+
+*Short training to teach AIs to lift their arm towards their goal.*
+</div>
+
+<div style="text-align:center">
+
+![LeftArmHigh](Annexes/LeftArmHigh.gif)
+
+*Long training to teach AIs to lift their arm towards their goal*
+</div>
+
+Once that was done, we tried to get our AIs to work, but to no avail. They were orienting towards their goal and trying to go as far as possible, without using their legs.
+
+<div style="text-align:center">
+
+![LeftArmHigh](Annexes/FirstMoves.gif)
+
+*AIs trying randoms moves to reach their goal*
+</div>
+
+<div style="text-align:center">
+
+![LeftArmHigh](Annexes/FirstSteps.gif)
+
+*AIs trying to stand as high as possible and move towards their goal*
+
+</div>
+
+After this second disappointment we tried to teach the AIs to use their legs, so we changed the setup and it was also a success.
+
+<div style="text-align:center">
+
+![VeryFirstStandUp](Annexes/VeryFirstStandUp.gif)
+
+*AIs trying to stand as high as possible*
+
+</div>
+
+<div style="text-align:center">
+
+![FirstStandUp](Annexes/FirstStandUp.gif)
+
+*AIs trying to maintain their balance*
+
+</div>
+
+<div style="text-align:center">
+
+![FirstStandUp](Annexes/HeadsUpContinuous.gif)
+
+*AIs managing to maintain their balance*
+
+</div>
+
 ## In the future:
 In the future, we will try to strengthen the learning process by creating our own ragdolls to make them more accurate. Also, we will try to train them on our own game engine to have more accurate physics and faster algorithms using C++.
 
@@ -191,6 +274,9 @@ In the future, we will try to strengthen the learning process by creating our ow
 ## References:
 General references:
 - https://www.youtube.com/watch?v=gn4nRCC9TwQ
+
+Genetic algorithm:
+- https://www.section.io/engineering-education/the-basics-of-genetic-algorithms-in-ml/
 
 Reinforcement learning:
 - https://arxiv.org/pdf/2205.01906v2.pdf
