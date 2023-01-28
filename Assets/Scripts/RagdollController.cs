@@ -51,13 +51,6 @@ public class RagdollController : MLPInterpreter
     {
         List<float> inputs = new List<float>();
 
-        foreach (CollisionSensor collisionSensor in footCollisionSensor)
-        {
-            //inputs.Add(collisionSensor.hasCollisionPoint ? 1f : 0f);
-            //inputs.Add(collisionSensor.contactPoint.y);
-            //inputs.Add(collisionSensor.contactPoint.z);
-        }
-
         foreach (Bone bone in bones)
         {
             if (bone.characterJoint)
@@ -111,8 +104,7 @@ public class RagdollController : MLPInterpreter
         float angleTorso = Vector3.Angle(torso.up, Vector3.up);
         float inclinationScore = 1f - (angleTorso / 180f);
 
-        //float score = (1f - Mathf.Clamp(distance, 0.01f, 20f) / 20f) * 0f + headHeightScore * 1f;
-        float score = headHeightScore * 1f +0 /*inclinationScore * 0f + inclinationFootScore * 0.2f*/;
+        float score = headHeightScore * 1f;
 
         return score;
     }

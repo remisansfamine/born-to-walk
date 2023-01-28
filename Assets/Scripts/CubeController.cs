@@ -35,7 +35,6 @@ public class CubeController : MLPInterpreter
     {
         float distance = Vector3.Distance(modifier.headTarget.position, transform.position);
 
-        //score = Mathf.Exp(-distance);
         float score = 1f - Mathf.Clamp(distance, 0.01f, 100f) / 100f;
 
         return score;
