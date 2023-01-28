@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
+using UnityEngine.WSA;
 
 public class Bone
 {
     public Rigidbody rigidbody;
-    public CollisionSensor collisionSensor;
     public CharacterJoint characterJoint;
+    public CollisionSensor collisionSensor;
 
     public Bone(Rigidbody rb)
     {
         rigidbody = rb;
         rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        collisionSensor = rb.GetComponent<CollisionSensor>();
         
         rb.TryGetComponent(out characterJoint);
+        rb.TryGetComponent(out collisionSensor);
 
     }
 }
@@ -32,6 +33,12 @@ public class RagdollController : MLPInterpreter
     public Transform boneLeftArm = null;
     public Transform boneRightArm = null;
 
+    public Transform torso;
+    public Transform leftLeg;
+    public Transform rightLeg;
+
+    public List<CollisionSensor> footCollisionSensor = new List<CollisionSensor>();
+
     private void Awake()
     {
         foreach (Rigidbody rb in bonesRigidbobies)
@@ -44,16 +51,35 @@ public class RagdollController : MLPInterpreter
     {
         List<float> inputs = new List<float>();
 
-        /*foreach (Bone bone in bones)
+        foreach (CollisionSensor collisionSensor in footCollisionSensor)
         {
-            inputs.Add(bone.rigidbody.transform.position.x);
-            inputs.Add(bone.rigidbody.transform.position.y);
-            inputs.Add(bone.rigidbody.transform.position.z);
+            //inputs.Add(collisionSensor.hasCollisionPoint ? 1f : 0f);
+            //inputs.Add(collisionSensor.contactPoint.y);
+            //inputs.Add(collisionSensor.contactPoint.z);
+        }
 
-            inputs.Add(bone.rigidbody.angularVelocity.x);
-            inputs.Add(bone.rigidbody.angularVelocity.y);
-            inputs.Add(bone.rigidbody.angularVelocity.z);
-        }*/
+        foreach (Bone bone in bones)
+        {
+            if (bone.characterJoint)
+            {
+                inputs.Add(bone.characterJoint.currentTorque.x);
+                inputs.Add(bone.characterJoint.currentTorque.y);
+                inputs.Add(bone.characterJoint.currentTorque.z);
+
+                inputs.Add(bone.characterJoint.currentForce.x);
+                inputs.Add(bone.characterJoint.currentForce.y);
+                inputs.Add(bone.characterJoint.currentForce.z);
+            }
+
+            inputs.Add(bone.rigidbody.transform.localPosition.x);
+            inputs.Add(bone.rigidbody.transform.localPosition.y);
+            inputs.Add(bone.rigidbody.transform.localPosition.z);
+
+            inputs.Add(bone.rigidbody.transform.localRotation.x);
+            inputs.Add(bone.rigidbody.transform.localRotation.y);
+            inputs.Add(bone.rigidbody.transform.localRotation.z);
+
+        }
 
         return inputs;
     }
@@ -72,10 +98,21 @@ public class RagdollController : MLPInterpreter
 
     public override float FitnessFunction(GeneticModifier modifier)
     {
+        //Reach target for walk
         float distance = Vector3.Distance(modifier.headTarget.position, boneHead.position);
+        
+        //To standing
         float headHeightScore =  boneHead.position.y / 2.5f;
-        Debug.Log("BoneHeadPos:" + boneHead.position);
-        float score = (1f - Mathf.Clamp(distance, 0.01f, 20f) / 20f) * 0f + headHeightScore * 1f;
+
+        float angleFoot1 = Vector3.Angle(footCollisionSensor[0].transform.forward, Vector3.up);
+        float angleFoot2 = Vector3.Angle(footCollisionSensor[1].transform.forward, Vector3.up);
+        float inclinationFootScore = (1f - (angleFoot1 / 180f) / 2) + (1f - (angleFoot2 / 180f) / 2);
+
+        float angleTorso = Vector3.Angle(torso.up, Vector3.up);
+        float inclinationScore = 1f - (angleTorso / 180f);
+
+        //float score = (1f - Mathf.Clamp(distance, 0.01f, 20f) / 20f) * 0f + headHeightScore * 1f;
+        float score = headHeightScore * 1f +0 /*inclinationScore * 0f + inclinationFootScore * 0.2f*/;
 
         return score;
     }

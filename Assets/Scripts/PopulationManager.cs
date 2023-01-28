@@ -7,42 +7,36 @@ using Newtonsoft.Json;
 
 public class PopulationManager : MonoBehaviour
 {
+    [Header("Instantiation settings")]
     [SerializeField] private GameObject m_individualPrefab = null;
-    [SerializeField] private Transform m_spawnPoint = null;
-
+    [SerializeField] private Transform spawnPoint = null;
     [SerializeField] private int populationCount = 0;
+    [SerializeField] private bool useGrid = false;
+    [SerializeField] private int maxColumnCount = 5;
+    [SerializeField] private float spacing = 4f;
+
+    [SerializeField] private bool useLayerIgnore = true;
     [SerializeField] private int layerOffset = 6;
 
+    [Header("Generation settings")]
+    [SerializeField] private bool reproduceGeneration = true;
+    [SerializeField] private float mutationRate = 0.01f;
+    [SerializeField] private int maxFixedStep = 0;
+    [SerializeField] private float timeScale = 1f;
+    [Tooltip("Elite count")]
+    [SerializeField] private int elitism = 0;
+
+    [Header("Goal")]
     [SerializeField] private Transform headTarget = null;
+    [SerializeField] private bool teleportTarget = true;
 
     private List<GeneticModifier> population = new List<GeneticModifier>();
 
-    public float BestFitness { get; private set; }
-    public List<MLPNetwork> BestGens = new List<MLPNetwork>();
-
     private float fitnessSum = 0;
-    [SerializeField] private float mutationRate = 0.01f;
-
     private int generationCount = 0;
-
-    [SerializeField] private int maxFixedStep = 0;
     private int currentFixedStep = 0;
 
-    [SerializeField] private int elitism = 0;
-
-    [SerializeField] private bool teleportTarget = true;
-    [SerializeField] private bool reproduceGeneration = true;
-
-    [SerializeField] private bool useLayerIgnore = true;
-
     private float initialFixedDeltaTime = 0;
-
-    [SerializeField] private float timeScale = 1f;
-
-    private void Awake()
-    {
-        
-    }
 
     void Start()
     {
@@ -50,7 +44,7 @@ public class PopulationManager : MonoBehaviour
 
         for (int i = 0; i < populationCount; i++)
         {
-            GeneticModifier individualGen =  InstantiateIndividual();
+            GeneticModifier individualGen =  InstantiateIndividual(population.Count);
             population.Add(individualGen);    
         }
 
@@ -94,9 +88,16 @@ public class PopulationManager : MonoBehaviour
         }
     }
 
-    private GeneticModifier InstantiateIndividual()
+    private GeneticModifier InstantiateIndividual(int currentPopulationCount)
     {
-        GameObject individual = Instantiate(m_individualPrefab, m_spawnPoint.position, m_spawnPoint.rotation);
+        Vector3 spawnPointPos = spawnPoint.position;
+
+        if (useGrid)
+        {
+            spawnPointPos += new Vector3(spacing * (currentPopulationCount % maxColumnCount), 0f, spacing * (currentPopulationCount / maxColumnCount));
+        }
+
+        GameObject individual = Instantiate(m_individualPrefab, spawnPointPos, spawnPoint.rotation);
 
         GeneticModifier geneticModifier = individual.GetComponent<GeneticModifier>();
         geneticModifier.Initialize(headTarget);
@@ -117,11 +118,7 @@ public class PopulationManager : MonoBehaviour
                 best = population[i];
         }
 
-        BestFitness = best.Fitness;
-        Debug.Log("BestFitness:" + BestFitness);
-
-        //TODO: le loup
-        BestGens.Add(best.mlp.Clone() as MLPNetwork);
+        Debug.Log("Best Fitness:" + best.Fitness);
     }
 
     private GeneticModifier ChooseParent(List<GeneticModifier> possibleParents)
@@ -167,7 +164,7 @@ public class PopulationManager : MonoBehaviour
         {
             if (i < elitism)
             {
-                GeneticModifier child = InstantiateIndividual();
+                GeneticModifier child = InstantiateIndividual(newPopulation.Count);
                 child.mlp = new MLPNetwork(population[i].mlp);
                 newPopulation.Add(child);
             }
@@ -180,7 +177,7 @@ public class PopulationManager : MonoBehaviour
 
                 GeneticModifier parentB = ChooseParent(possibleParents);
 
-                GeneticModifier child = InstantiateIndividual();
+                GeneticModifier child = InstantiateIndividual(newPopulation.Count);
 
                 GeneticModifier.Crossover(ref child, parentA, parentB);
 
@@ -241,7 +238,7 @@ public class PopulationManager : MonoBehaviour
             {
                 mlp.LinkLayers();
 
-                GeneticModifier individualGen = InstantiateIndividual();
+                GeneticModifier individualGen = InstantiateIndividual(population.Count);
                 individualGen.mlp = mlp;
                 population.Add(individualGen);
             }
