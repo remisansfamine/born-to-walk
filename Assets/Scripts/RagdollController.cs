@@ -1,9 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.Windows;
-using UnityEngine.WSA;
 
 public class Bone
 {
@@ -38,6 +34,10 @@ public class RagdollController : MLPInterpreter
     public Transform rightLeg;
 
     public List<CollisionSensor> footCollisionSensor = new List<CollisionSensor>();
+
+    [SerializeField] private float torqueModifier = 1000f;
+
+    [SerializeField] private float maxHeadHeight = 2.5f;
 
     private void Awake()
     {
@@ -81,28 +81,21 @@ public class RagdollController : MLPInterpreter
     {
         for (int i = 0; i < bones.Count - 1; ++i)
         {
-            float torque = outputs[i];
-            float swingTorque =  outputs[i * 2];
+            float outTorque = outputs[i];
+            float outSwingTorque =  outputs[i * 2];
 
-            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.axis * (torque * 1000f), ForceMode.Impulse);
-            bones[i].rigidbody.AddRelativeTorque(bones[i].characterJoint.swingAxis * (swingTorque * 1000f), ForceMode.Impulse);
+            float torque = outTorque * torqueModifier;
+            float swingTorque = outSwingTorque * torqueModifier;
+
+            bones[i].rigidbody.AddRelativeTorque(torque * bones[i].characterJoint.axis, ForceMode.Impulse);
+            bones[i].rigidbody.AddRelativeTorque(swingTorque * bones[i].characterJoint.swingAxis, ForceMode.Impulse);
         }
     }
 
     public override float FitnessFunction(GeneticModifier modifier)
     {
-        //Reach target for walk
-        float distance = Vector3.Distance(modifier.headTarget.position, boneHead.position);
-        
         //To standing
-        float headHeightScore =  boneHead.position.y / 2.5f;
-
-        float angleFoot1 = Vector3.Angle(footCollisionSensor[0].transform.forward, Vector3.up);
-        float angleFoot2 = Vector3.Angle(footCollisionSensor[1].transform.forward, Vector3.up);
-        float inclinationFootScore = (1f - (angleFoot1 / 180f) / 2) + (1f - (angleFoot2 / 180f) / 2);
-
-        float angleTorso = Vector3.Angle(torso.up, Vector3.up);
-        float inclinationScore = 1f - (angleTorso / 180f);
+        float headHeightScore =  boneHead.position.y / maxHeadHeight;
 
         float score = headHeightScore * 1f;
 

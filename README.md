@@ -270,11 +270,13 @@ After this second disappointment we tried to teach the AIs to use their legs, so
 </div>
 
 ### **Fitness development**
-In order for the AI to learn to have the highest possible head, we had to find a formula to obtain a fitness between $[0; 1]$. This value must be as high as possible when the head is close to its goal than when it is far from it. At first we just tried to use a simple formula, such as: $\dfrac{1}{d}$. Where $d$ is equals to ${dist(head, goal)}$
+In order for the AI to learn to get the closest to its goal, we had to find a formula to obtain a fitness between $[0; 1]$. This value must be as high as possible when the Agent is close to its goal than when it is far from it. At first we just tried to use a simple formula, such as: $\dfrac{1}{d}$. Where $d$ is equals to ${dist(position, goal)}$
 
 But this one was a problem because it was located between $]0,\infty[$. But thanks to function analysis we could find this formula: $\dfrac{1}{e^d} = e^{-d}$.
 
-But this formula had a problem, its evolution was too low, the difference in fitness was not important enough for two very different head heights. So we ended up with this formula, more modular: $1 - \dfrac{d}{maxDistance}$. Where $maxDistance$ is an arbitrary value chosen according to the size of the set.
+But this formula had a problem, its evolution was too low, the difference in fitness was not important enough for two very different distances. So we ended up with this formula, more modular: $1 - \dfrac{d}{maxDistance}$. Where $maxDistance$ is an arbitrary value chosen according to the size of the set.
+
+To get the AI to have its head as high as possible, it was enough to use this formula: $\dfrac{d}{maxDistance}$
 
 ## In the future:
 In the future, we will try to strengthen the learning process by creating our own ragdolls to make them more accurate. Also, we will try to train them on our own game engine to have more accurate physics and faster algorithms using C++.

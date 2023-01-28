@@ -1,11 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows;
 
 public class TopRagdollController : RagdollController
 {
+    [SerializeField] private float minArmDistance = 0.01f;
+    [SerializeField] private float maxArmDistance = 2f;
+
     public override List<float> GetInputs()
     {
         List<float> inputs = new List<float>();
@@ -15,9 +15,11 @@ public class TopRagdollController : RagdollController
 
     public override float FitnessFunction(GeneticModifier modifier)
     {
-        float distanceLeft = Vector3.Distance(modifier.headTarget.position, boneLeftArm.position);
+        float distanceLeft = Vector3.Distance(modifier.targetTransform.position, boneLeftArm.position);
+        float distanceRight = Vector3.Distance(modifier.targetTransform.position, boneRightArm.position);
 
-        float score = 1f - Mathf.Clamp(distanceLeft, 0.01f, 10f) / 10f;
+        float score = 0.5f * (2f - Mathf.Clamp(distanceLeft, minArmDistance, maxArmDistance) / maxArmDistance
+                                 - Mathf.Clamp(distanceRight, minArmDistance, maxArmDistance) / maxArmDistance);
 
         return score;
     }

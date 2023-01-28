@@ -1,9 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using System.Linq;
-using UnityEngine.SocialPlatforms.Impl;
 
 public class GeneticModifier : MonoBehaviour
 {
@@ -11,7 +7,7 @@ public class GeneticModifier : MonoBehaviour
 
     [SerializeField] private MLPInterpreter mlpInterpreter;
 
-    public Transform headTarget = null;
+    public Transform targetTransform = null;
 
     public float Fitness { get; private set; }
 
@@ -19,14 +15,14 @@ public class GeneticModifier : MonoBehaviour
     public void Initialize(Transform _headTarget)
     {
         mlp.Initialize();
-        headTarget = _headTarget;
+        targetTransform = _headTarget;
     }
 
     private void FixedUpdate()
     {
         List<float> inputs = mlpInterpreter.GetInputs();
 
-        Vector3 dir = transform.position - headTarget.position;
+        Vector3 dir = transform.position - targetTransform.position;
         inputs.Add(dir.x);
         inputs.Add(dir.y);
         inputs.Add(dir.z);

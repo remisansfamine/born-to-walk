@@ -1,8 +1,6 @@
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using UnityEngine;
 
 public enum EActivationType
@@ -47,9 +45,7 @@ public class Perceptron
     {
         for (int i = 0; i < weights.Count; i++)
             weights[i] += UnityEngine.Random.Range(-.1f, .1f);
-            //weights[i] = UnityEngine.Random.Range(0f, initialWeightRange);
-        
-        //biasWeight = UnityEngine.Random.Range(0f, initialWeightRange);
+
         biasWeight += UnityEngine.Random.Range(-.1f, .1f);
 
     }

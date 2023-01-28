@@ -29,6 +29,8 @@ public class PopulationManager : MonoBehaviour
     [Header("Goal")]
     [SerializeField] private Transform headTarget = null;
     [SerializeField] private bool teleportTarget = true;
+    [SerializeField] private float goalDistance = 25f;
+
 
     private List<GeneticModifier> population = new List<GeneticModifier>();
 
@@ -149,10 +151,9 @@ public class PopulationManager : MonoBehaviour
 
         if (teleportTarget)
         {
-            //Vector3 circle = Random.insideUnitSphere;
             Vector2 circle = Random.insideUnitCircle;
             circle.Normalize();
-            circle *= 25f;
+            circle *= goalDistance;
 
             headTarget.position = new Vector3(circle.x, 0f, circle.y);
         }

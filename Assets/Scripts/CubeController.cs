@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR;
 
 [RequireComponent(typeof(Rigidbody))]
 public class CubeController : MLPInterpreter
@@ -9,6 +7,10 @@ public class CubeController : MLPInterpreter
 
     private Rigidbody cubeRigidbody = null;
     private CollisionSensor collisionSensor = null;
+
+    [SerializeField] private float minDistance = 0.01f;
+    [SerializeField] private float maxDistance = 100f;
+    [SerializeField] private float forceModifier = 100f;
 
     private void Awake()
     {
@@ -26,16 +28,16 @@ public class CubeController : MLPInterpreter
     public override void SetOuputs(List<float> outputs)
     {
         cubeRigidbody.velocity = Vector3.zero;
-        Vector3 force = new Vector3(outputs[0], outputs[1], outputs[2]);
-        cubeRigidbody.AddForce(force * 100f, ForceMode.Impulse);
+        Vector3 outForce = new Vector3(outputs[0], outputs[1], outputs[2]);
+        cubeRigidbody.AddForce(outForce * forceModifier, ForceMode.Impulse);
 
     }
 
     public override float FitnessFunction(GeneticModifier modifier)
     {
-        float distance = Vector3.Distance(modifier.headTarget.position, transform.position);
+        float distance = Vector3.Distance(modifier.targetTransform.position, transform.position);
 
-        float score = 1f - Mathf.Clamp(distance, 0.01f, 100f) / 100f;
+        float score = 1f - Mathf.Clamp(distance, minDistance, maxDistance) / maxDistance;
 
         return score;
     }

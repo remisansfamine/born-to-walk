@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328015552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -392,7 +392,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: -0.15211588, y: 0.8193545, z: -0.21685614, w: -0.5084216}
-  m_LocalPosition: {x: 1.46, y: 2.581, z: 0.709}
+  m_LocalPosition: {x: 3.11, y: 2.581, z: 1.54}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -541,6 +541,7 @@ MonoBehaviour:
   elitism: 5
   headTarget: {fileID: 1172384566}
   teleportTarget: 1
+  goalDistance: 2
 --- !u!4 &1034128559
 Transform:
   m_ObjectHideFlags: 0
@@ -569,7 +570,7 @@ GameObject:
   - component: {fileID: 1172384564}
   - component: {fileID: 1172384563}
   m_Layer: 0
-  m_Name: GoalRems
+  m_Name: Goal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

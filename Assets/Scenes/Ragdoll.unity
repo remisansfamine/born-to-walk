@@ -541,6 +541,7 @@ MonoBehaviour:
   elitism: 5
   headTarget: {fileID: 1172384566}
   teleportTarget: 0
+  goalDistance: 25
 --- !u!4 &1034128559
 Transform:
   m_ObjectHideFlags: 0
@@ -569,7 +570,7 @@ GameObject:
   - component: {fileID: 1172384564}
   - component: {fileID: 1172384563}
   m_Layer: 0
-  m_Name: GoalRems
+  m_Name: Goal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
