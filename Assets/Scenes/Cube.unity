@@ -429,18 +429,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_individualPrefab: {fileID: 5083631317110670937, guid: 8af87fb8e998b0d4ba31585babc645a8, type: 3}
-  m_spawnPoint: {fileID: 328015553}
+  spawnPoint: {fileID: 328015553}
   populationCount: 200
+  useGrid: 0
+  maxColumnCount: 5
+  spacing: 4
+  useLayerIgnore: 0
   layerOffset: 6
-  headTarget: {fileID: 1172384566}
-  BestGens: []
+  reproduceGeneration: 1
   mutationRate: 0.4
   maxFixedStep: 100
-  elitism: 25
-  teleportTarget: 1
-  reproduceGeneration: 1
-  useLayerIgnore: 0
   timeScale: 1
+  elitism: 25
+  headTarget: {fileID: 1172384566}
+  teleportTarget: 1
 --- !u!4 &1034128559
 Transform:
   m_ObjectHideFlags: 0
@@ -652,6 +654,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1034128558}
+    - target: {fileID: 2888917547798247405, guid: 54997e9f1d5007248bae3f3feddb9a54, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadFromJSON
+      objectReference: {fileID: 0}
     - target: {fileID: 2888917548032456478, guid: 54997e9f1d5007248bae3f3feddb9a54, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
