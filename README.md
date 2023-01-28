@@ -12,7 +12,7 @@
 # About The Project 
 **Built with Unity 2021.3.5f1**
 
-The goal of this project is to apply the principles of learning in a video game contexte. We decided to take on the challenge of developing an AI capable of learning to walk using a *ragdoll* as a physical representation.
+The goal of this project is to apply the principles of learning in a video game contexte. We decided to take on the challenge of developing an AI capable of learning to walk using a *ragdoll* as a physical representation. This AI works on a multilayer perceptron basis refined by genetic algorithms.
 
 # Table of contents
 1. [Features](#features)
@@ -42,7 +42,7 @@ There is no character controller, to navigate in the scene you have to use the s
 ## Genetic Algorithm Implementation
 We decided to implement a genetic algorithm to teach a ragdoll to walk by natural selection.
 
-To integrate a genetic algorithm with MLP in the project, 
+To integrate a genetic algorithm with Multilayer Perceptrons in the project, 
 we instantiate a population with variable neural network weights.
 At each fixed update, we send a list of inputs to the MLP and obtain the list of outputs.
 
@@ -192,6 +192,8 @@ public static void SetLayerRecursively(this GameObject obj, int newLayer)
 </div>
 
 ## Stages of development
+
+### **Algorithm development**
 When we started the project, we took as an ambitious goal to train an AI to walk. We knew it wasn't going to be possible in a week, but we took the challenge. We first started to develop the interface for the MLP to interact with the Ragdoll. Then we implemented the genetic algorithms using the MLP.
 
 <div style="text-align:center">
@@ -205,7 +207,7 @@ When we started the project, we took as an ambitious goal to train an AI to walk
 
 ![Cubes](Annexes/HyperTrainedCubes.gif)
 
-*Super trained ML-Agents cubes.*
+*Super trained ML-Agent cubes.*
 </div>
 
 After developing a solid genetic algorithm, we decided to be less ambitious and to first train ragdolls able to raise an arm in a direction. And this was a succes.
@@ -266,6 +268,13 @@ After this second disappointment we tried to teach the AIs to use their legs, so
 *AIs managing to maintain their balance*
 
 </div>
+
+### **Fitness development**
+In order for the AI to learn to have the highest possible head, we had to find a formula to obtain a fitness between $[0; 1]$. This value must be as high as possible when the head is close to its goal than when it is far from it. At first we just tried to use a simple formula, such as: $\dfrac{1}{d}$. Where $d$ is equals to ${dist(head, goal)}$
+
+But this one was a problem because it was located between $]0,\infty[$. But thanks to function analysis we could find this formula: $\dfrac{1}{e^d} = e^{-d}$.
+
+But this formula had a problem, its evolution was too low, the difference in fitness was not important enough for two very different head heights. So we ended up with this formula, more modular: $1 - \dfrac{d}{maxDistance}$. Where $maxDistance$ is an arbitrary value chosen according to the size of the set.
 
 ## In the future:
 In the future, we will try to strengthen the learning process by creating our own ragdolls to make them more accurate. Also, we will try to train them on our own game engine to have more accurate physics and faster algorithms using C++.
