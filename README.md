@@ -37,13 +37,13 @@ To integrate ragdoll physics into the project, we had to make that the MLP outpu
 
 <div style="text-align:center">
 
-![Consideration](Annexes/MuscularJoints.png)
+![MuscularJoints](Annexes/MuscularJoints.png)
 
 *Muscular flexion scheme*
 </div>
 
 
-### **Unity Implementation**
+### **Character Joint Implementation**
 By using the variables ``axis`` and ``wingAxis``, we were able to obtain a correct behavior of the joints. Using only 2 scalars allows us to better mimic the behavior of humanoid joints and limit the number of outputs. With 10 bones, we had 20 outputs in total.
 
 ```cs
@@ -62,7 +62,49 @@ By using the variables ``axis`` and ``wingAxis``, we were able to obtain a corre
     }
 ```
 
+### **Collision Query and Ignore Collisions**
+To see our population evolve properly, we had to instantiate each individual in the same position to check for evolution. Because of the dynamic instantiation, and because collisions between the bones of a ragdoll are very important, we had to ignore layers with other ragdolls on the fly. To do this, we had to ignore collisions between 26 of the 31 layers (because the first 5 layers are native to Unity) at the beginning of the program. Then, after creating our entire population, we had to recursively define the layers for each bone in each individual.
 
+```cs
+if (useLayerIgnore)
+{
+    for (int lai = layerOffset; lai < populationCount + layerOffset; lai++)
+    {
+        for (int lbi = lai + 1; lbi < populationCount + layerOffset; lbi++)
+            Physics.IgnoreLayerCollision(lai, lbi, true);
+    }
+
+    SetLayers();
+}
+
+private void SetLayers()
+{
+    for (int i = 0; i < populationCount; i++)
+        population[i].gameObject.SetLayerRecursively(layerOffset + i);
+}
+
+public static void SetLayerRecursively(this GameObject obj, int newLayer)
+{
+    obj.layer = newLayer;
+
+    for (int i = 0; i < obj.transform.childCount; i++)
+        obj.transform.GetChild(i).gameObject.SetLayerRecursively(newLayer);
+}
+```
+
+<div style="text-align:center">
+
+![Collisions](Annexes/Collisions.gif)
+
+*Ragdoll training with collisions*
+</div>
+
+<div style="text-align:center">
+
+![NoCollisions](Annexes/NoCollisions.gif)
+
+*Ragdoll training without collisions*
+</div>
 
 ## In the future:
 In the future, we will try to strengthen the learning process by creating our own ragdolls to make them more accurate. Also, we will try to train them on our own game engine to have more accurate physics and faster algorithms using C++.
